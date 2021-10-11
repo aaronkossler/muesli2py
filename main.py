@@ -8,6 +8,7 @@ print("Starting Muesli Library ... ")
 muesli.start_timer()
 muesli.fib(30)
 muesli.test_openmp()
-muesli.test_mpi();
+muesli.test_mpi()
+print(muesli.test_cuda())
 print(muesli.version())
 # print("took: " + str(muesli.end_timer()/1000) + " miliseconds\n")

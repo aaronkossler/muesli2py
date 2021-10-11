@@ -7,7 +7,10 @@
 #include <chrono>
 #include <omp.h>
 #include <mpi.h>
+//#ifdef __CUDACC__
 #include <cuda.h>
+// #endif
+#include <string>
 
 std::chrono::steady_clock::time_point start_time;
 std::chrono::steady_clock::time_point end_time;
@@ -50,7 +53,7 @@ static PyObject* test_mpi(PyObject* self, PyObject* args)
 
     // Finalize the MPI environment.
     MPI_Finalize();
-    return Py_BuildValue("i", 1);
+    return Py_BuildValue("i", 2);
 
 }
 static PyObject* test_openmp(PyObject* self, PyObject* args){
@@ -60,14 +63,17 @@ static PyObject* test_openmp(PyObject* self, PyObject* args){
     }
     return Py_BuildValue("i", 1);
 }
+#ifdef __CUDACC__
 static PyObject* test_cuda(PyObject* self, PyObject* args){
-    //cudaStream_t stream;
-    /* cudaStreamCreate(&stream);                                                                  // Create CUDA stream
-
+    cudaStream_t stream;
+    cudaStreamCreate(&stream);                                                                  // Create CUDA stream
+    int device_id;
     cudaDeviceProp prop;                                                                        // CUDA device properties variable
-    cudaGetDeviceProperties( &prop, device_id);*/
-    return Py_BuildValue("i", 2);
+    cudaGetDeviceProperties( &prop, device_id);
+    const char * s = "Device Name: ";
+    return Py_BuildValue("s", s);
 }
+#endif
 static PyObject* start_timer(PyObject* self, PyObject* args) {
     start_time = std::chrono::steady_clock::now();
     return Py_BuildValue("i", (start_time));
@@ -88,6 +94,7 @@ static PyMethodDef myMethods[] = {
     {"end_timer", end_timer, METH_VARARGS, "End Timer"},
     {"test_mpi", test_mpi, METH_VARARGS, "Test MPI"},
     {"test_openmp", test_openmp, METH_VARARGS, "Test OpenMP"},
+    {"test_cuda", test_cuda, METH_VARARGS, "Test Cuda"},
     {"version", (PyCFunction)version, METH_NOARGS, "Returns the version."},
     {NULL, NULL, 0, NULL}
 };
