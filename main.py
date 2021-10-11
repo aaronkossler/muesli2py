@@ -1,13 +1,13 @@
 import muesli
 from mpi4py import MPI
 
-#comm = MPI.COMM_WORLD
-#rank = comm.Get_rank()
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
 
-#print("Hello, World! \nI am process " + str(rank) + "\n")
-print("Starting Muesli Library")
-muesli.startTimer()
-muesli.fib(50)
+print("Starting Muesli Library ... ")
+muesli.start_timer()
+muesli.fib(30)
+muesli.test_openmp()
+muesli.test_mpi();
 print(muesli.version())
-print("took: " + str(muesli.endTimer()/1000) + " miliseconds\n")
-
+# print("took: " + str(muesli.end_timer()/1000) + " miliseconds\n")

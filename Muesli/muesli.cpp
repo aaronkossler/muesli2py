@@ -5,6 +5,8 @@
 #include <error.h>
 #include <cmath>
 #include <chrono>
+#include <omp.h>
+#include <mpi.h>
 
 std::chrono::steady_clock::time_point start_time;
 std::chrono::steady_clock::time_point end_time;
@@ -26,22 +28,42 @@ static PyObject* fib(PyObject* self, PyObject* args)
  
     return Py_BuildValue("i", Cfib(n));
 }
-static PyObject* testMPI(PyObject* self, PyObject* args)
+static PyObject* test_mpi(PyObject* self, PyObject* args)
 {
-/*    int size, rank;
-    MPI_Comm_size(comm, &size);
-    MPI_Comm_rank(comm, &rank);
-    printf("Hello, World! "
-           "I am process %d of %d.\n",
-           rank, size);*/
-}
+    // Get the number of processes
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
-static PyObject* startTimer(PyObject* self, PyObject* args)
-{
+    // Get the rank of the process
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
+    // Get the name of the processor
+    char processor_name[MPI_MAX_PROCESSOR_NAME];
+    int name_len;
+    MPI_Get_processor_name(processor_name, &name_len);
+
+    // Print off a hello world message
+    printf("Hello world from processor %s, rank %d out of %d processors\n",
+           processor_name, world_rank, world_size);
+
+    // Finalize the MPI environment.
+    MPI_Finalize();
+    return Py_BuildValue("i", 1);
+
+}
+static PyObject* test_openmp(PyObject* self, PyObject* args){
+    #pragma omp parallel for
+    for (int i = 0; i < 5; i++) {
+        printf("Hello from process: %d \n", i);
+    }
+    return Py_BuildValue("i", 1);
+}
+static PyObject* start_timer(PyObject* self, PyObject* args) {
     start_time = std::chrono::steady_clock::now();
     return Py_BuildValue("i", (start_time));
 }
-static PyObject* endTimer(PyObject* self, PyObject* args)
+static PyObject* end_timer(PyObject* self, PyObject* args)
 {
     end_time = std::chrono::steady_clock::now();
     return Py_BuildValue("i", (end_time-start_time));
@@ -53,9 +75,10 @@ static PyObject* version(PyObject* self)
  
 static PyMethodDef myMethods[] = {
     {"fib", fib, METH_VARARGS, "Muesli Wrapper"},
-    {"startTimer", startTimer, METH_VARARGS, "Start Timer"},
-    {"endTimer", endTimer, METH_VARARGS, "End Timer"},
-    {"testMPI", testMPI, METH_VARARGS, "Test MPI"},
+    {"start_timer", start_timer, METH_VARARGS, "Start Timer"},
+    {"end_timer", end_timer, METH_VARARGS, "End Timer"},
+    {"test_mpi", test_mpi, METH_VARARGS, "Test MPI"},
+    {"test_openmp", test_openmp, METH_VARARGS, "Test OpenMP"},
     {"version", (PyCFunction)version, METH_NOARGS, "Returns the version."},
     {NULL, NULL, 0, NULL}
 };
