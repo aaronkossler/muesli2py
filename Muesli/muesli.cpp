@@ -7,7 +7,6 @@
 #include <chrono>
 #include <omp.h>
 #include <mpi.h>
-#include <cuda.h>
 
 std::chrono::steady_clock::time_point start_time;
 std::chrono::steady_clock::time_point end_time;
@@ -60,14 +59,7 @@ static PyObject* test_openmp(PyObject* self, PyObject* args){
     }
     return Py_BuildValue("i", 1);
 }
-static PyObject* test_cuda(PyObject* self, PyObject* args){
-    //cudaStream_t stream;
-    /* cudaStreamCreate(&stream);                                                                  // Create CUDA stream
 
-    cudaDeviceProp prop;                                                                        // CUDA device properties variable
-    cudaGetDeviceProperties( &prop, device_id);*/
-    return Py_BuildValue("i", 2);
-}
 static PyObject* start_timer(PyObject* self, PyObject* args) {
     start_time = std::chrono::steady_clock::now();
     return Py_BuildValue("i", (start_time));
@@ -81,7 +73,6 @@ static PyObject* version(PyObject* self)
 {
     return Py_BuildValue("s", "Version 0.000001");
 }
- 
 static PyMethodDef myMethods[] = {
     {"fib", fib, METH_VARARGS, "Muesli Wrapper"},
     {"start_timer", start_timer, METH_VARARGS, "Start Timer"},

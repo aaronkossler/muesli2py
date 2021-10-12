@@ -6,6 +6,7 @@ muesli2py is developed to supply the functionalities of muesli in python code. F
     - [ ] (openacc)
     - [x] openmp
 - [ ] support for DA/DM (distributed arrays - distributed matrices)
+    - [ ] research alternatives to include classes (swig (support for parallelization frameworks?), Python class) 
     - [ ] nparray ([C-API](https://numpy.org/doc/stable/user/c-info.html), [writing extension modules](https://numpy.org/doc/stable/user/c-info.how-to-extend.html#writing-an-extension-module))
     - [ ] native arrays
 - [ ] map + variations
