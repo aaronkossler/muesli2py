@@ -1,9 +1,7 @@
-from distutils.core import setup, Extension
 import os
-
-from setuptools import setup, Extension, Command
+from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext
 from Cython.Distutils import build_ext
-from Cython.Build import cythonize
 import numpy as np
 from os.path import join as pjoin
 from setup_cuda import cuda_setup
@@ -39,7 +37,7 @@ if isinstance(nvcc, str):
     #       cmdclass={'build_ext': cuda_setup.custom_build_ext()}
     #       )
 else:
-    module = Extension('_da', sources=['da.cxx', 'da.i'],
+    module = Extension('_da', sources=['da.cxx', 'da_wrap.cxx'],
                        include_dirs=[np.get_include(), 'src'],
                        library_dirs=['/usr/include/boost/'],
                        language="c++",

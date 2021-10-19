@@ -61,5 +61,27 @@ class _SwigNonDynamicMeta(type):
     __setattr__ = _swig_setattr_nondynamic_class_variable(type.__setattr__)
 
 
+class da(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def __init__(self, *args):
+        _da.da_swiginit(self, _da.new_da(*args))
+    __swig_destroy__ = _da.delete_da
+
+    def get_size(self):
+        return _da.da_get_size(self)
+
+    def fill(self, value):
+        return _da.da_fill(self, value)
+
+    def printarray(self):
+        return _da.da_printarray(self)
+    size = property(_da.da_size_get, _da.da_size_set)
+    elements = property(_da.da_elements_get, _da.da_elements_set)
+
+# Register da in _da:
+_da.da_swigregister(da)
+
 
 

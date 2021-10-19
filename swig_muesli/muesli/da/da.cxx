@@ -7,17 +7,28 @@
 #include <omp.h>
 #include <mpi.h>
 
-dista::dista(){
-  printf("Constructor\n");
+da::da(int c_size){
+    size = c_size;
+    elements = new int[size];
+}
+da::da(int c_size, int value){
+    size = c_size;
+    elements = new int[size];
+    fill(value);
 }
 
-dista::~dista(){
+da::~da(){
   printf("Destructor\n");
 }
 
-int dista::get_size() {
+int da::get_size() {
     return size;
 }
-void dista::set_size(int set_size) {
-    size = set_size;
+void da::fill(int value) {
+    for (int i = 0; i < size; i++) elements[i] = value;
+}
+void da::printarray() {
+    printf("[");
+    for (int i = 0; i< size; i++) printf("%d;", elements[i]);
+    printf("]");
 }

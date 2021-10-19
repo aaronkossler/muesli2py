@@ -39,14 +39,14 @@ if isinstance(nvcc, str):
     #       cmdclass={'build_ext': cuda_setup.custom_build_ext()}
     #       )
 else:
-    module = Extension('muesli', sources=['muesli.cpp'],
+    module = Extension('muesli', sources=['muesli.c'],
                        include_dirs=[np.get_include(), 'src'],
                        library_dirs=['/usr/include/boost/'],
                        libraries=['/usr/include/boost/chrono'],
                        extra_compile_args=(["-fopenmp"] + mpi_compile_args),
                        extra_link_args=(["-fopenmp"] + mpi_link_args)
                        )
-    damodule = Extension('da', sources=['da.cpp'],
+    damodule = Extension('da', sources=['da.cxx'],
                        include_dirs=[np.get_include(), 'src'],
                        library_dirs=['/usr/include/boost/'],
                        libraries=['/usr/include/boost/chrono'],

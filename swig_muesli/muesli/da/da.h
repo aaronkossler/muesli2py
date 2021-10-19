@@ -1,11 +1,12 @@
 /* File: da.h */
-
-class dista {
+class da {
 public:
-  dista();
-  ~dista();
+  da(int size);
+  da(int size, int value);
+  ~da();
   int get_size();
-  void set_size(int set_size);
+  void fill(int value);
+  void printarray();
   int size;
-  int * elements;
+  int* elements;
 };
