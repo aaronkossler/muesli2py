@@ -6,7 +6,7 @@ from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy as np
 from os.path import join as pjoin
-from setup_cuda import cuda_setup
+# from setup_cuda import cuda_setup
 
 mpi_compile_args = os.popen("mpic++ --showme:compile").read().strip().split(' ')
 mpi_link_args = os.popen("mpic++ --showme:link").read().strip().split(' ')
