@@ -53,7 +53,9 @@ void DA<T>::printarray() {
 
 template<typename T>
 void DA<T>::map(const std::function<T(T)> &f) {
+    #pragma omp parallel for
     for (int i = 0; i < n; i++) {
+        #pragma omp atomic
         elements[i] = f(elements[i]);
     }
 }

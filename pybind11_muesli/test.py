@@ -17,7 +17,7 @@ def test(i):
     return i * 25
 
 
-mate = Pydm(5,4,6)
+mate = Pydm(5,3,3)
 mate.printmatrix()
 mate.map(test)
 mate.printmatrix()
