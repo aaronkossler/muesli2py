@@ -14,6 +14,7 @@ include_directories(${MPI_INCLUDE_PATH})
 
 add_subdirectory(pybind11)
 pybind11_add_module(da da.cpp)
+pybind11_add_module(dm dm.cpp)
 pybind11_add_module(muesli muesli_utils.cpp)
 
 target_link_libraries(muesli PRIVATE mpi)
