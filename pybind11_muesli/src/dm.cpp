@@ -1,6 +1,6 @@
 /* File: example.c */
 
-#include "dm.h"
+#include "../include/dm.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <error.h>
