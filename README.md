@@ -6,15 +6,15 @@ muesli2py is developed to supply the functionalities of muesli in python code. F
     - [ ] (openacc)
     - [x] openmp
 - [ ] support for DA/DM (distributed arrays - distributed matrices)
-    - [ ] research alternatives to include classes (swig (support for parallelization frameworks?), Python class) 
+    - [x] research alternatives to include classes (swig (support for parallelization frameworks?), Python class) 
        - [x] swig works (see swig_muesli)
-       - [ ] alternatively pybind11 --> research
-    - [ ] native arrays
+       - [x] pybind11 works (see pybind11_muesli) --> framework of choice
+    - [x] native arrays
       - [x] multi-constructors 
-      - [ ] missing templates 
-    - [ ] nparray ([C-API](https://numpy.org/doc/stable/user/c-info.html), [writing extension modules](https://numpy.org/doc/stable/user/c-info.how-to-extend.html#writing-an-extension-module))
+      - [x] missing templates 
+    - [x] nparray ([C-API](https://numpy.org/doc/stable/user/c-info.html), [writing extension modules](https://numpy.org/doc/stable/user/c-info.how-to-extend.html#writing-an-extension-module))
 - [ ] map + variations
-  - [ ] how can userfunctions be pased as arguments? 
+  - [x] how can userfunctions be pased as arguments? --> functional.h in pybind11
 - [ ] ...
 
 Features which are not essential for a first prototype
