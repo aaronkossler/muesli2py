@@ -32,7 +32,11 @@ public:
     void setElements(py::array_t<T> array);
     void printmatrix();
     void mapInPlace(const std::function<T(T)> &f);
+    void mapIndexInPlace(const std::function<T(T,T)> &f, int index);
+    void mapIndexInPlace(const std::function<T(T,T)> &f, int row, int col);
     DM<T> map(const std::function<T(T)> &f);
+    DM<T> mapIndex(const std::function<T(T,T)> &f, int index);
+    DM<T> mapIndex(const std::function<T(T,T)> &f, int row, int col);
 
     //
     // Attributes
@@ -58,5 +62,12 @@ public:
     int firstRow;
     // Total number of MPI processes
     int np;
+
+    //
+    // AUXILIARY
+    //
+
+    // initializes distributed matrix (used in constructors).
+//    void init();
 };
 }

@@ -25,8 +25,11 @@ public:
   void fill(const T& value);
   void setElements(py::array_t<T> array);
   void printarray();
-  DA<T> map(const std::function<T(T)> &f);
   void mapInPlace(const std::function<T(T)> &f);
+  void mapIndexInPlace(const std::function<T(T,T)> &f, int index);
+  DA<T> map(const std::function<T(T)> &f);
+  DA<T> mapIndex(const std::function<T(T,T)> &f, int index);
+
 
   // Attributes
   // Number of elements

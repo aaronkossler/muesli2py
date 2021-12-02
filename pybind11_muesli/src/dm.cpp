@@ -28,15 +28,31 @@ msl::DM<T>::DM():                       // distributed array (resides on GPUs un
 template<typename T>
 msl::DM<T>::DM(int row, int col)
     : ncol(col), nrow(row), n(col*row){
-    elements = new int[n];
+    elements = new T[n];
 }
 
 template<typename T>
 msl::DM<T>::DM(int row, int col, const T& v)
     : ncol(col), nrow(row), n(col*row){
-    elements = new int[n];
+    elements = new T[n];
     fill(v);
 }
+
+/*// auxiliary method init()
+template<typename T>
+void msl::DM<T>::init() {
+  if (Muesli::proc_entrance == UNDEFINED) {
+    throws(detail::MissingInitializationException());}
+  id = Muesli::proc_id;
+  np = Muesli::num_total_procs;
+  n = ncol * nrow;
+  nLocal = n / np;
+  nCPU = nLocal;
+  firstIndex =  id * nLocal;
+  printf("loc prozesses %d , First index %d\n", Muesli::num_local_procs, firstIndex);
+  printf("Building datastructure with %d nodes and %d cpus\n", msl::Muesli::num_total_procs,
+         msl::Muesli::num_local_procs);
+}*/
 
 template<typename T>
 msl::DM<T>::~DM() {
@@ -86,12 +102,58 @@ void msl::DM<T>::mapInPlace(const std::function<T(T)> &f) {
 }
 
 template<typename T>
+void msl::DM<T>::mapIndexInPlace(const std::function<T(T,T)> &f, int index) {
+    T ref = elements[index];
+
+    #pragma omp parallel for
+    for (int i = 0; i < n; i++) {
+        elements[i] = f(elements[i], ref);
+    }
+}
+
+template<typename T>
+void msl::DM<T>::mapIndexInPlace(const std::function<T(T,T)> &f, int row, int col) {
+    T ref = elements[row*ncol+col];
+
+    #pragma omp parallel for
+    for (int i = 0; i < n; i++) {
+        elements[i] = f(elements[i], ref);
+    }
+}
+
+template<typename T>
 msl::DM<T> msl::DM<T>::map(const std::function<T(T)> &f) {
     DM<T> result(ncol, nrow);
 
     #pragma omp parallel for
     for (int i = 0; i < n; i++) {
         result.elements[i] = f(elements[i]);
+    }
+
+    return result;
+}
+
+template<typename T>
+msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(T,T)> &f, int index) {
+    DM<T> result(ncol, nrow);
+    T ref = elements[index];
+
+    #pragma omp parallel for
+    for (int i = 0; i < n; i++) {
+        result.elements[i] = f(elements[i], ref);
+    }
+
+    return result;
+}
+
+template<typename T>
+msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(T,T)> &f, int row, int col) {
+    DM<T> result(ncol, nrow);
+    T ref = elements[row*ncol+col];
+
+    #pragma omp parallel for
+    for (int i = 0; i < n; i++) {
+        result.elements[i] = f(elements[i], ref);
     }
 
     return result;
@@ -105,10 +167,15 @@ PYBIND11_MODULE(dm, dm_handle) {
     .def(py::init())
 	.def(py::init<int, int>())
 	.def(py::init<int, int, int>())
+//	.def("init", &msl::DM<int>::init)
 	.def("fill", &msl::DM<int>::fill)
 	.def("setElements", &msl::DM<int>::setElements)
 	.def("printmatrix", &msl::DM<int>::printmatrix)
 	.def("mapInPlace", &msl::DM<int>::mapInPlace)
+	.def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &, int>(&msl::DM<int>::mapIndexInPlace))
+	.def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &, int, int>(&msl::DM<int>::mapIndexInPlace))
 	.def("map", &msl::DM<int>::map)
+	.def("mapIndex", py::overload_cast<const std::function<int(int,int)> &, int>(&msl::DM<int>::mapIndex))
+	.def("mapIndex", py::overload_cast<const std::function<int(int,int)> &, int, int>(&msl::DM<int>::mapIndex))
     ;
 }
