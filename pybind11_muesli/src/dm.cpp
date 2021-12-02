@@ -78,11 +78,23 @@ void msl::DM<T>::printmatrix() {
 }
 
 template<typename T>
-void msl::DM<T>::map(const std::function<T(T)> &f) {
+void msl::DM<T>::mapInPlace(const std::function<T(T)> &f) {
     #pragma omp parallel for
     for (int i = 0; i < n; i++) {
         elements[i] = f(elements[i]);
     }
+}
+
+template<typename T>
+msl::DM<T> msl::DM<T>::map(const std::function<T(T)> &f) {
+    DM<T> result(ncol, nrow);
+
+    #pragma omp parallel for
+    for (int i = 0; i < n; i++) {
+        result.elements[i] = f(elements[i]);
+    }
+
+    return result;
 }
 
 PYBIND11_MODULE(dm, dm_handle) {
@@ -96,6 +108,7 @@ PYBIND11_MODULE(dm, dm_handle) {
 	.def("fill", &msl::DM<int>::fill)
 	.def("setElements", &msl::DM<int>::setElements)
 	.def("printmatrix", &msl::DM<int>::printmatrix)
+	.def("mapInPlace", &msl::DM<int>::mapInPlace)
 	.def("map", &msl::DM<int>::map)
     ;
 }

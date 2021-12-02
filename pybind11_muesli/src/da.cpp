@@ -60,12 +60,24 @@ void msl::DA<T>::printarray() {
 }
 
 template<typename T>
-void msl::DA<T>::map(const std::function<T(T)> &f) {
+void msl::DA<T>::mapInPlace(const std::function<T(T)> &f) {
     #pragma omp parallel for
     for (int i = 0; i < n; i++) {
         #pragma omp atomic
         elements[i] = f(elements[i]);
     }
+}
+
+template<typename T>
+msl::DA<T> msl::DA<T>::map(const std::function<T(T)> &f) {
+    DA<T> result(n);
+
+    #pragma omp parallel for
+    for (int i = 0; i < n; i++) {
+        result.elements[i] = f(elements[i]);
+    }
+
+    return result;
 }
 
 PYBIND11_MODULE(da, da_handle) {
@@ -80,6 +92,7 @@ PYBIND11_MODULE(da, da_handle) {
 	.def("fill", &msl::DA<int>::fill)
     .def("setElements", &msl::DA<int>::setElements)
 	.def("printarray", &msl::DA<int>::printarray)
+	.def("mapInPlace", &msl::DA<int>::mapInPlace)
 	.def("map", &msl::DA<int>::map)
     ;
 }
