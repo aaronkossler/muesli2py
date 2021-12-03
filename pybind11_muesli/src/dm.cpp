@@ -21,7 +21,9 @@ msl::DM<T>::DM():                       // distributed array (resides on GPUs un
       nLocal(0),                   // number of local elements on a node
       np(0),                       // number of (MPI-) nodes (= Muesli::num_local_procs)
       id(0),                       // id of local node among all nodes (= Muesli::proc_id)
-      localPartition(0)            // local partition of the DM
+      localPartition(0),           // local partition of the DM
+      firstIndex(0),               // first global index of the DM in the local partition
+      firstRow(0)                 // first global row index of the DM on the local partition
 {}
 
 // constructor creates a non-initialized DM
