@@ -4,8 +4,8 @@
 
 #ifdef _OPENMP
    #include <omp.h>
-#else
-   #define omp_get_thread_num() 0
+//#else
+//   #define omp_get_thread_num() 0
 #endif
 
 #include <iostream>
@@ -23,7 +23,7 @@
 #include "timer.h"
 
 #define MSL_USERFUNC
-#define MSL_GPUFUNC
+//#define MSL_GPUFUNC
 #define MSL_CPUFUNC
 
 namespace msl {
@@ -67,7 +67,7 @@ static const int RANDOM_DISTRIBUTION = 1;
 static const int CYCLIC_DISTRIBUTION = 2;
 static const int DEFAULT_DISTRIBUTION = CYCLIC_DISTRIBUTION;
 static const int UNDEFINED = -1;
-static const int DEFAULT_TASK_GOUP_SIZE = 256;
+static const int DEFAULT_TASK_GROUP_SIZE = 256;
 static const int DEFAULT_NUM_CONC_KERNELS = 16;
 static const int DEFAULT_NUM_RUNS = 1;
 static const int DEFAULT_TILE_WIDTH = 16;
@@ -139,4 +139,20 @@ bool isRootProcess();
  *        statistics.
  */
 void setFarmStatistics(bool val);
+
+//
+// AUXILIARY FUNCTIONS
+//
+
+/**
+ * \brief Used to quit the program on failure,  must be used after initSkeletons()
+ */
+void fail_exit();
+
+/**
+ * \brief Throws an Exception.
+ *
+ * @param e The exception to throw.
+ */
+//void throws(const detail::Exception& e);
 }

@@ -4,6 +4,7 @@
 #include <error.h>
 #include <omp.h>
 #include <mpi.h>
+#include <iostream>
 #include "../include/muesli.h"
 
 int msl::Muesli::proc_id;
@@ -47,7 +48,7 @@ void msl::initSkeletons(bool debug_communication)
 
   int device_count = 0;
 
-  Muesli::task_group_size = DEFAULT_TASK_GOUP_SIZE;
+  Muesli::task_group_size = DEFAULT_TASK_GROUP_SIZE;
 //  Muesli::num_conc_kernels = DEFAULT_NUM_CONC_KERNELS;
 
   #ifdef _OPENMP
@@ -81,7 +82,7 @@ void msl::terminateSkeletons()
   }
 
   if (isRootProcess()) {
-    s << std::endl << "Name: " << Muesli::program_name << std::endl;
+//    s << std::endl << "Name: " << Muesli::program_name << std::endl;
     s << "Proc: " << Muesli::num_total_procs << std::endl;
     s << "CPU only" << std::endl;
     s << "Threads per proc: " << Muesli::num_threads << std::endl;
@@ -165,6 +166,18 @@ void msl::setFarmStatistics(bool val)
   Muesli::farm_statistics = val;
 }
 
+void msl::fail_exit()
+{
+  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Finalize();
+  exit(EXIT_FAILURE);
+}
+
+//void msl::throws(const detail::Exception& e)
+//{
+//  std::cout << Muesli::proc_id << ": " << e << std::endl;
+//}
+
 PYBIND11_MODULE(muesli, muesli_handle) {
   muesli_handle.doc() = "I'm a docstring hehe";
   muesli_handle.def("initSkeletons", &msl::initSkeletons);
@@ -178,5 +191,7 @@ PYBIND11_MODULE(muesli, muesli_handle) {
   muesli_handle.def("stopTiming", &msl::stopTiming);
   muesli_handle.def("isRootProcess", &msl::isRootProcess);
   muesli_handle.def("setFarmStatistics", &msl::setFarmStatistics);
+  muesli_handle.def("fail_exit", &msl::fail_exit);
+//  muesli_handle.def("throws", &msl::throws);
 }
 

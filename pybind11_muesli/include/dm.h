@@ -1,4 +1,5 @@
 #include <type_traits>
+#include "muesli.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
@@ -62,12 +63,14 @@ public:
     int firstRow;
     // Total number of MPI processes
     int np;
+    // number of elements on CPU
+    int nCPU;
 
     //
     // AUXILIARY
     //
 
     // initializes distributed matrix (used in constructors).
-//    void init();
+    void init();
 };
 }
