@@ -102,10 +102,9 @@ msl::DA<T> msl::DA<T>::mapIndex(const std::function<T(T,T)> &f, int index) {
     return result;
 }
 
-PYBIND11_MODULE(da, da_handle) {
-  da_handle.doc() = "I'm a docstring hehe";
-  py::class_<msl::DA<int>>(
-			da_handle, "Pyda"
+void bind_da(py::module& m) {
+    py::class_<msl::DA<int>>(
+			m, "Pyda"
 			)
 	.def(py::init())
 	.def(py::init<int>())

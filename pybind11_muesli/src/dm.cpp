@@ -53,22 +53,28 @@ void msl::DM<T>::init() {
 //  if (Muesli::proc_entrance == UNDEFINED) {
 //    throws(detail::MissingInitializationException());
 //  }
-//  TODO: ImportError when accessing Muesli static variables.
-//  id = Muesli::proc_id;
-//  np = Muesli::num_total_procs;
-//  n = ncol * nrow;
-//  nLocal = n / np;
+  id = Muesli::proc_id;
+  np = Muesli::num_total_procs;
+  n = ncol * nrow;
+  nLocal = n / np;
   nCPU = nLocal;
   firstIndex =  id * nLocal;
-//  printf("loc processes %d , First index %d\n", Muesli::num_local_procs, firstIndex);
-//  printf("Building datastructure with %d nodes and %d cpus\n", msl::Muesli::num_total_procs,
-//         msl::Muesli::num_local_procs);
+  printf("loc processes %d , First index %d\n", Muesli::num_local_procs, firstIndex);
+  printf("Building datastructure with %d nodes and %d cpus\n", msl::Muesli::num_total_procs,
+         msl::Muesli::num_local_procs);
 }
 
 template<typename T>
 msl::DM<T>::~DM() {
   printf("Destructor\n");
 }
+
+// **************************** auxiliary methods ****************************
+template<typename T>
+T* msl::DM<T>::getLocalPartition() {
+  return localPartition;
+}
+
 
 template<typename T>
 int msl::DM<T>::getSize() const {
@@ -104,6 +110,7 @@ void msl::DM<T>::printmatrix() {
     }
 }
 
+//*********************************** Maps ***********************************
 template<typename T>
 void msl::DM<T>::mapInPlace(const std::function<T(T)> &f) {
     #pragma omp parallel for
@@ -170,15 +177,13 @@ msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(T,T)> &f, int row, int col
     return result;
 }
 
-PYBIND11_MODULE(dm, dm_handle) {
-  dm_handle.doc() = "I'm a docstring hehe";
-  py::class_<msl::DM<int>>(
-			dm_handle, "Pydm"
+void bind_dm(py::module& m) {
+    py::class_<msl::DM<int>>(
+			m, "Pydm"
 			)
     .def(py::init())
 	.def(py::init<int, int>())
 	.def(py::init<int, int, int>())
-	.def("init", &msl::DM<int>::init)
 	.def("fill", &msl::DM<int>::fill)
 	.def("setElements", &msl::DM<int>::setElements)
 	.def("printmatrix", &msl::DM<int>::printmatrix)

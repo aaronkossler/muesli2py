@@ -21,8 +21,8 @@ int msl::Muesli::num_threads;
 int msl::Muesli::num_runs;
 //int msl::Muesli::num_gpus;
 //int msl::Muesli::max_gpus;
-double msl::Muesli::cpu_fraction = 0.2; // fraction of each DA partition handled by CPU cores (rather than GPUs)
-int msl::Muesli::threads_per_block;
+//double msl::Muesli::cpu_fraction = 0.2; // fraction of each DA partition handled by CPU cores (rather than GPUs)
+//int msl::Muesli::threads_per_block;
 //int msl::Muesli::tpb_x;
 //int msl::Muesli::tpb_y;
 bool msl::Muesli::debug_communication;
@@ -173,25 +173,19 @@ void msl::fail_exit()
   exit(EXIT_FAILURE);
 }
 
-//void msl::throws(const detail::Exception& e)
-//{
-//  std::cout << Muesli::proc_id << ": " << e << std::endl;
-//}
-
-PYBIND11_MODULE(muesli, muesli_handle) {
-  muesli_handle.doc() = "I'm a docstring hehe";
-  muesli_handle.def("initSkeletons", &msl::initSkeletons);
-  muesli_handle.def("terminateSkeletons", &msl::terminateSkeletons);
-//  muesli_handle.def("printv", &msl::printv);
-  muesli_handle.def("setNumThreads", &msl::setNumThreads);
-  muesli_handle.def("setNumRuns", &msl::setNumRuns);
-  muesli_handle.def("setTaskGroupSize", &msl::setTaskGroupSize);
-  muesli_handle.def("startTiming", &msl::startTiming);
-  muesli_handle.def("splitTime", &msl::splitTime);
-  muesli_handle.def("stopTiming", &msl::stopTiming);
-  muesli_handle.def("isRootProcess", &msl::isRootProcess);
-  muesli_handle.def("setFarmStatistics", &msl::setFarmStatistics);
-  muesli_handle.def("fail_exit", &msl::fail_exit);
-//  muesli_handle.def("throws", &msl::throws);
+void msl::throws(const detail::Exception& e)
+{
+  std::cout << Muesli::proc_id << ": " << e << std::endl;
 }
 
+void bind_muesli(py::module& m) {
+  m.def("initSkeletons", &msl::initSkeletons);
+  m.def("terminateSkeletons", &msl::terminateSkeletons);
+//  m.def("printv", &msl::printv);
+  m.def("setNumThreads", &msl::setNumThreads);
+  m.def("setNumRuns", &msl::setNumRuns);
+  m.def("setTaskGroupSize", &msl::setTaskGroupSize);
+  m.def("setFarmStatistics", &msl::setFarmStatistics);
+  m.def("fail_exit", &msl::fail_exit);
+
+}

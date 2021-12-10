@@ -13,10 +13,7 @@ set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
 include_directories(${MPI_INCLUDE_PATH})
 
 add_subdirectory(pybind11)
-pybind11_add_module(da src/da.cpp)
-pybind11_add_module(dm src/dm.cpp)
-pybind11_add_module(muesli src/muesli.cpp)
-pybind11_add_module(test src/test.cpp)
+pybind11_add_module(muesli SHARED module.cpp src/muesli.cpp src/muesli_com.cpp src/dm.cpp src/da.cpp)
 
 target_link_libraries(muesli PRIVATE mpi)
 if(OpenMP_CXX_FOUND)

@@ -38,3 +38,9 @@ public:
   int* elements;
 };
 } //namespace msl
+
+//
+// BINDING FUNCTION
+//
+
+void bind_da(py::module& m);
