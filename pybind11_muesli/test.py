@@ -31,7 +31,8 @@ setNumThreads(4)
 # def two(i, j):
 #     return i*j
 #
-mate = Pydm(3,3,3)
+mate = Pydm(2,2,2)
+# mate.show()
 # mate.printmatrix()
 # mate.setElements(np.array([1,2,3,4,5,6,7,8,9]))
 # mate.printmatrix()

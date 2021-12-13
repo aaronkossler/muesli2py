@@ -136,7 +136,7 @@ public:
     *
     * @param elements for the local partition.
     */
-    void setLocalPartition(T* elements);
+//    void setLocalPartition(T* elements);
 
     /**
     * \brief Returns the element at the given global index \em index.
@@ -177,6 +177,15 @@ public:
     int getFirstIndex() const;
 
     /**
+    * \brief Checks whether the element at the given global index \em index is
+    *        locally stored.
+    *
+    * @param index The global index.
+    * @return True if the element is locally stored.
+    */
+    bool isLocal(int index) const;
+
+    /**
     * \brief Returns the element at the given local index \em index. Note that
     *        0 <= \em index < getLocalSize() must hold (will not be checked, for
     *        reasons of performance).
@@ -203,12 +212,22 @@ public:
     void showLocal(const std::string& descr);
 
     /**
+    * \brief Prints the distributed array to standard output. Optionally, the user
+    *        may pass a description that will be printed with the output.
+    *
+    * @param descr The description string.
+    */
+//    void show(const std::string& descr = std::string());
+    void show();
+
+    /**
     * \brief Each process prints its local partition of the distributed array.
     */
     void printLocal();
 
     void setElements(py::array_t<T> array);
     void printmatrix();
+    int getSomething();
 
 private:
     //

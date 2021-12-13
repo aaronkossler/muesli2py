@@ -4,8 +4,8 @@
 
 #ifdef _OPENMP
    #include <omp.h>
-//#else
-//   #define omp_get_thread_num() 0
+#else
+   #define omp_get_thread_num() 0
 #endif
 
 #include <pybind11/pybind11.h>
@@ -276,7 +276,7 @@ void allgather(T* send_buffer, T* recv_buffer, int* const ids, int np, size_t co
  * @tparam T Type of the message.
  */
 template<typename T>
-void allgather(T* send_buffer, T* recv_buffer, size_t count);
+void allgather(T* send_buffer, T* recv_buffer, int count);
 
 /**
  * \brief Wrapper for the MPI_Scatter routine. Every process in \em MPI_COMM WORLD
@@ -366,6 +366,10 @@ inline C2 proj2_2(C1 a, C2 b);
 
 template <typename T>
 inline void show(T* a, int size);
+
+int doSomething();
+
+
 }
 
 //
@@ -374,3 +378,4 @@ inline void show(T* a, int size);
 
 void bind_muesli(py::module& m);
 
+#include "../src/muesli_com.tpp"

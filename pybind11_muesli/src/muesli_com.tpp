@@ -30,8 +30,12 @@
  *
  */
 
-#include "../include/muesli.h"
+//#include "../include/muesli.h"
+#include <mpi.h>
+//#include <cstdint>
 #include "../include/detail/exception.h"
+
+//using namespace std;
 
 inline void msl::MSL_SendTag(int destination, int tag)
 {
@@ -258,7 +262,8 @@ void msl::allgather(T* send_buffer, T* recv_buffer, int* const ids, int np, size
 }
 
 template<typename T>
-void msl::allgather(T* send_buffer, T* recv_buffer, size_t count)
+//void msl::allgather(T* send_buffer, T* recv_buffer, size_t count)
+void msl::allgather(T* send_buffer, T* recv_buffer, int count)
 {
   size_t bytes = count * sizeof(T);
   MPI_Allgather(send_buffer, bytes, MPI_BYTE, recv_buffer, bytes, MPI_BYTE, MPI_COMM_WORLD);
@@ -273,9 +278,9 @@ void msl::scatter(T* send_buffer, T* recv_buffer, size_t count)
 
 // Broadcast.
 template <typename T>
-inline void msl::MSL_Broadcast(int source, T* buf, int size)
+inline void msl::MSL_Broadcast(int source, T* buffer, int size)
 {
-  MPI_Bcast(buf, size * sizeof(T), MPI_BYTE, source, MPI_COMM_WORLD);
+  MPI_Bcast(buffer, size * sizeof(T), MPI_BYTE, source, MPI_COMM_WORLD);
 }
 
 // Barrier.
@@ -319,11 +324,6 @@ inline void msl::MSL_Recv(int source, std::vector<T>& recv_buffer, int tag)
 // VARIOUS HELPER FUNCTIONS
 //
 
-//void msl::MSL_Barrier()
-//{
-//  MPI_Barrier(MPI_COMM_WORLD);
-//}
-
 template <typename C1, typename C2>
 inline C1 msl::proj1_2(C1 a, C2 b)
 {
@@ -335,18 +335,6 @@ inline C2 msl::proj2_2(C1 a, C2 b)
 {
   return b;
 }
-
-//template <typename F>
-//inline int msl::auxRotateRows(const Fct1<int, int, F>& f, int blocks, int row, int col)
-//{
-//  return (col + f(row) + blocks) % blocks;
-//}
-
-//template <typename F>
-//inline int msl::auxRotateCols(const Fct1<int, int, F>& f, int blocks, int row, int col)
-//{
-//  return (row + f(col) + blocks) % blocks;
-//}
 
 template <typename T>
 inline void msl::show(T* a, int size)

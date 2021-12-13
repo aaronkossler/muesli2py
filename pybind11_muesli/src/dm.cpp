@@ -2,6 +2,8 @@
 
 #include "../include/muesli.h"
 #include "../include/dm.h"
+#include "../include/detail/exception.h"
+
 #include <stdexcept>
 #include <iostream>
 #include <stdlib.h>
@@ -36,23 +38,22 @@ template<typename T>
 msl::DM<T>::DM(int row, int col)
     : ncol(col), nrow(row), n(col*row){
     init();
-    elements = new T[n];
 }
 
+// constructor creates a DM, initialized with v
 template<typename T>
 msl::DM<T>::DM(int row, int col, const T& v)
     : ncol(col), nrow(row), n(col*row){
     init();
-    elements = new T[n];
     fill(v);
 }
 
 // auxiliary method init()
 template<typename T>
 void msl::DM<T>::init() {
-//  if (Muesli::proc_entrance == UNDEFINED) {
-//    throws(detail::MissingInitializationException());
-//  }
+  if (Muesli::proc_entrance == UNDEFINED) {
+    throws(detail::MissingInitializationException());
+  }
   id = Muesli::proc_id;
   np = Muesli::num_total_procs;
   n = ncol * nrow;
@@ -64,9 +65,18 @@ void msl::DM<T>::init() {
          msl::Muesli::num_local_procs);
 }
 
+// destructor removes a DM
 template<typename T>
 msl::DM<T>::~DM() {
   printf("Destructor\n");
+}
+
+template<typename T>
+void msl::DM<T>::fill(const T& value) {
+    #pragma omp parallel for
+    for (int k = 0; k < nCPU; k++) {
+        localPartition[k] = value;
+    }
 }
 
 // **************************** auxiliary methods ****************************
@@ -75,6 +85,33 @@ T* msl::DM<T>::getLocalPartition() {
   return localPartition;
 }
 
+/*template<typename T>
+void msl::DM<T>::setLocalPartition(py::array_t<T> array) {
+    #pragma omp parallel for
+    for (int k = 0; k < nCPU; k++) {
+        localPartition[k] = *array.data(k);
+    }
+}*/
+
+template<typename T>
+T msl::DM<T>::get(int index) const {
+  int idSource;
+  T message;
+ // TODO: adjust to new structure
+  // element with global index is locally stored
+  if (isLocal(index)) {
+    message = localPartition[index - firstIndex];
+    idSource = Muesli::proc_id;
+  }
+  // Element with global index is not locally stored
+  else {
+    // Calculate id of the process that stores the element locally
+    idSource = (int) (index / nLocal);
+  }
+
+  msl::MSL_Broadcast(idSource, &message, 1);
+  return message;
+}
 
 template<typename T>
 int msl::DM<T>::getSize() const {
@@ -82,11 +119,65 @@ int msl::DM<T>::getSize() const {
 }
 
 template<typename T>
-void msl::DM<T>::fill(const T& value) {
-    #pragma omp parallel for
-    for (int i = 0; i < n; i++) {
-        elements[i] = value;
+int msl::DM<T>::getLocalSize() const {
+  return nLocal;
+}
+
+template<typename T>
+int msl::DM<T>::getFirstIndex() const {
+  return firstIndex;
+}
+
+template<typename T>
+bool msl::DM<T>::isLocal(int index) const {
+  return (index >= firstIndex) && (index < firstIndex + nLocal);
+}
+
+template<typename T>
+T msl::DM<T>::getLocal(int localIndex) {
+  if (localIndex >= nLocal)
+    throws(detail::NonLocalAccessException());
+  return localPartition[localIndex];
+}
+
+template<typename T>
+void msl::DM<T>::setLocal(int localIndex, const T& v) {
+  if (localIndex < nCPU) {
+    localPartition[localIndex] = v;
+  } else if (localIndex >= nLocal)
+    throws(detail::NonLocalAccessException());
+}
+
+template<typename T>
+void msl::DM<T>::set(int globalIndex, const T& v) {
+  if ((globalIndex >= firstIndex) && (globalIndex < firstIndex + nLocal)) {
+    setLocal(globalIndex - firstIndex, v);
+  }
+}
+
+template<typename T>
+//void msl::DM<T>::show(const std::string& descr) {
+void msl::DM<T>::show() {
+  T* b = new T[n];
+  std::ostringstream s;
+//  if (descr.size() > 0)
+//    s << descr << ": " << std::endl;
+
+  msl::allgather(localPartition, b, nLocal);
+
+  if (msl::isRootProcess()) {
+    s << "[";
+    for (int i = 0; i < n - 1; i++) {
+      s << b[i];
+      ((i+1) % ncol == 0) ? s << "\n " : s << " ";;
     }
+    s << b[n - 1] << "]" << std::endl;
+    s << std::endl;
+  }
+
+  delete b;
+
+  if (msl::isRootProcess()) printf("%s", s.str().c_str());
 }
 
 template<typename T>
@@ -115,7 +206,7 @@ template<typename T>
 void msl::DM<T>::mapInPlace(const std::function<T(T)> &f) {
     #pragma omp parallel for
     for (int i = 0; i < n; i++) {
-        elements[i] = f(elements[i]);
+        localPartition[i] = f(localPartition[i]);
     }
 }
 
@@ -144,8 +235,8 @@ msl::DM<T> msl::DM<T>::map(const std::function<T(T)> &f) {
     DM<T> result(ncol, nrow);
 
     #pragma omp parallel for
-    for (int i = 0; i < n; i++) {
-        result.elements[i] = f(elements[i]);
+    for (int k = 0; k < nCPU; k++){
+        result.setLocal(k, f(localPartition[k]));
     }
 
     return result;
@@ -185,13 +276,24 @@ void bind_dm(py::module& m) {
 	.def(py::init<int, int>())
 	.def(py::init<int, int, int>())
 	.def("fill", &msl::DM<int>::fill)
-	.def("setElements", &msl::DM<int>::setElements)
-	.def("printmatrix", &msl::DM<int>::printmatrix)
+//	.def("setElements", &msl::DM<int>::setElements)
+//	.def("printmatrix", &msl::DM<int>::printmatrix)
 	.def("mapInPlace", &msl::DM<int>::mapInPlace)
-	.def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &, int>(&msl::DM<int>::mapIndexInPlace))
-	.def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &, int, int>(&msl::DM<int>::mapIndexInPlace))
+//	.def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &, int>(&msl::DM<int>::mapIndexInPlace))
+//	.def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &, int, int>(&msl::DM<int>::mapIndexInPlace))
 	.def("map", &msl::DM<int>::map)
-	.def("mapIndex", py::overload_cast<const std::function<int(int,int)> &, int>(&msl::DM<int>::mapIndex))
-	.def("mapIndex", py::overload_cast<const std::function<int(int,int)> &, int, int>(&msl::DM<int>::mapIndex))
+//	.def("mapIndex", py::overload_cast<const std::function<int(int,int)> &, int>(&msl::DM<int>::mapIndex))
+//	.def("mapIndex", py::overload_cast<const std::function<int(int,int)> &, int, int>(&msl::DM<int>::mapIndex))
+    .def("getLocalPartition", &msl::DM<int>::getLocalPartition)
+//    .def("setLocalPartition", &msl::DM<int>::setLocalPartition)
+    .def("get", &msl::DM<int>::get)
+    .def("set", &msl::DM<int>::set)
+    .def("show", &msl::DM<int>::show)
+    .def("getSize", &msl::DM<int>::getSize)
+    .def("getLocalSize", &msl::DM<int>::getLocalSize)
+    .def("getFirstIndex", &msl::DM<int>::getFirstIndex)
+    .def("getLocal", &msl::DM<int>::getLocal)
+    .def("setLocal", &msl::DM<int>::setLocal)
+
     ;
 }
