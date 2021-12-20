@@ -1,10 +1,10 @@
 #include <pybind11/pybind11.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <error.h>
-#include <omp.h>
-#include <mpi.h>
-#include <iostream>
+//#include <stdlib.h>
+//#include <stdio.h>
+//#include <error.h>
+//#include <omp.h>
+//#include <mpi.h>
+//#include <iostream>
 #include "../include/muesli.h"
 
 int msl::Muesli::proc_id;

@@ -1,6 +1,6 @@
 import numpy as np
 from build.muesli import *
-# from build.test import *
+from build.test import *
 
 
 # def square(i):
@@ -19,10 +19,9 @@ from build.muesli import *
 # top.printarray()
 
 
-# def test(i):
-#     return i * 25
-#
-#
+
+
+
 
 
 initSkeletons(False)
@@ -33,6 +32,14 @@ setNumThreads(4)
 #
 mate = Pydm(2,2,2)
 # mate.show()
+
+
+def square(i):
+    return i * i
+
+
+mate.mapInPlace(square)
+mate.show()
 # mate.printmatrix()
 # mate.setElements(np.array([1,2,3,4,5,6,7,8,9]))
 # mate.printmatrix()
@@ -40,3 +47,5 @@ mate = Pydm(2,2,2)
 # mate.printmatrix()
 # sup.printmatrix()
 terminateSkeletons()
+
+# print(test_openmp())

@@ -2,15 +2,14 @@
 
 #include "../include/muesli.h"
 #include "../include/dm.h"
-#include "../include/detail/exception.h"
 
-#include <stdexcept>
-#include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <error.h>
-#include <omp.h>
-#include <mpi.h>
+//#include <stdexcept>
+//#include <iostream>
+//#include <stdlib.h>
+//#include <stdio.h>
+//#include <error.h>
+//#include <omp.h>
+//#include <mpi.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
@@ -69,6 +68,7 @@ void msl::DM<T>::init() {
 template<typename T>
 msl::DM<T>::~DM() {
   printf("Destructor\n");
+//  delete[] localPartition;
 }
 
 template<typename T>
@@ -155,6 +155,24 @@ void msl::DM<T>::set(int globalIndex, const T& v) {
   }
 }
 
+// method (only) useful for debbuging
+template<typename T>
+//void msl::DM<T>::showLocal(const std::string& descr) {
+void msl::DM<T>::showLocal() {
+  if (msl::isRootProcess()) {
+    std::ostringstream s;
+//    if (descr.size() > 0)
+//    s << descr << ": ";
+    s << "[";
+    for (int i = 0; i < nLocal; i++) {
+      s << localPartition[i] << " ";
+    }
+    s << "]" << std::endl;
+    printf("%s", s.str().c_str());
+  }
+}
+
+// TODO: fix this maybe
 template<typename T>
 //void msl::DM<T>::show(const std::string& descr) {
 void msl::DM<T>::show() {
@@ -180,15 +198,7 @@ void msl::DM<T>::show() {
   if (msl::isRootProcess()) printf("%s", s.str().c_str());
 }
 
-template<typename T>
-void msl::DM<T>::setElements(py::array_t<T> array) {
-    #pragma omp parallel for
-    for (int i = 0; i < n; i++) {
-        elements[i] = *array.data(i);
-    }
-}
-
-template<typename T>
+/*template<typename T>
 void msl::DM<T>::printmatrix() {
     #pragma omp parallel for
     for (int i = 0; i< nrow; i++) {
@@ -199,35 +209,36 @@ void msl::DM<T>::printmatrix() {
         }
     printf("|\n");
     }
-}
+}*/
 
 //*********************************** Maps ***********************************
 template<typename T>
 void msl::DM<T>::mapInPlace(const std::function<T(T)> &f) {
+    //TODO: Fix Freeze
     #pragma omp parallel for
-    for (int i = 0; i < n; i++) {
-        localPartition[i] = f(localPartition[i]);
+    for (int k = 0; k < nCPU; k++) {
+        setLocal(k, f(6));
     }
 }
 
 template<typename T>
 void msl::DM<T>::mapIndexInPlace(const std::function<T(T,T)> &f, int index) {
-    T ref = elements[index];
-
-    #pragma omp parallel for
-    for (int i = 0; i < n; i++) {
-        elements[i] = f(elements[i], ref);
-    }
+//    T ref = elements[index];
+//
+//    #pragma omp parallel for
+//    for (int i = 0; i < n; i++) {
+//        elements[i] = f(elements[i], ref);
+//    }
 }
 
 template<typename T>
 void msl::DM<T>::mapIndexInPlace(const std::function<T(T,T)> &f, int row, int col) {
-    T ref = elements[row*ncol+col];
-
-    #pragma omp parallel for
-    for (int i = 0; i < n; i++) {
-        elements[i] = f(elements[i], ref);
-    }
+//    T ref = elements[row*ncol+col];
+//
+//    #pragma omp parallel for
+//    for (int i = 0; i < n; i++) {
+//        elements[i] = f(elements[i], ref);
+//    }
 }
 
 template<typename T>
@@ -245,12 +256,12 @@ msl::DM<T> msl::DM<T>::map(const std::function<T(T)> &f) {
 template<typename T>
 msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(T,T)> &f, int index) {
     DM<T> result(ncol, nrow);
-    T ref = elements[index];
-
-    #pragma omp parallel for
-    for (int i = 0; i < n; i++) {
-        result.elements[i] = f(elements[i], ref);
-    }
+//    T ref = elements[index];
+//
+//    #pragma omp parallel for
+//    for (int i = 0; i < n; i++) {
+//        result.elements[i] = f(elements[i], ref);
+//    }
 
     return result;
 }
@@ -258,12 +269,12 @@ msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(T,T)> &f, int index) {
 template<typename T>
 msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(T,T)> &f, int row, int col) {
     DM<T> result(ncol, nrow);
-    T ref = elements[row*ncol+col];
-
-    #pragma omp parallel for
-    for (int i = 0; i < n; i++) {
-        result.elements[i] = f(elements[i], ref);
-    }
+//    T ref = elements[row*ncol+col];
+//
+//    #pragma omp parallel for
+//    for (int i = 0; i < n; i++) {
+//        result.elements[i] = f(elements[i], ref);
+//    }
 
     return result;
 }
@@ -288,6 +299,7 @@ void bind_dm(py::module& m) {
 //    .def("setLocalPartition", &msl::DM<int>::setLocalPartition)
     .def("get", &msl::DM<int>::get)
     .def("set", &msl::DM<int>::set)
+    .def("showLocal", &msl::DM<int>::showLocal)
     .def("show", &msl::DM<int>::show)
     .def("getSize", &msl::DM<int>::getSize)
     .def("getLocalSize", &msl::DM<int>::getLocalSize)

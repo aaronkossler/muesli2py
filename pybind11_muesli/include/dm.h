@@ -1,5 +1,8 @@
+#pragma once
+
 #include <type_traits>
 #include "muesli.h"
+#include "detail/exception.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
@@ -209,7 +212,8 @@ public:
     *
     * @param descr The description string.
     */
-    void showLocal(const std::string& descr);
+//    void showLocal(const std::string& descr);
+    void showLocal();
 
     /**
     * \brief Prints the distributed array to standard output. Optionally, the user
@@ -225,9 +229,7 @@ public:
     */
     void printLocal();
 
-    void setElements(py::array_t<T> array);
-    void printmatrix();
-    int getSomething();
+//    void printmatrix();
 
 private:
     //
@@ -244,8 +246,8 @@ private:
     int ncol;
     // Number of rows
     int nrow;
-    // Pointer to array of elements
-    int* elements;
+//    // Pointer to array of elements
+//    int* elements;
     // Number of local elements
     int nLocal;
     // First (global) index of local partition
