@@ -17,7 +17,7 @@ char* msl::Muesli::program_name;
 int msl::Muesli::distribution_mode;
 int msl::Muesli::task_group_size;
 //int msl::Muesli::num_conc_kernels;
-int msl::Muesli::num_threads;
+//int msl::Muesli::num_threads;
 int msl::Muesli::num_runs;
 //int msl::Muesli::num_gpus;
 //int msl::Muesli::max_gpus;
@@ -38,9 +38,9 @@ void msl::initSkeletons(bool debug_communication)
   MPI_Init(NULL, NULL);
   MPI_Comm_size(MPI_COMM_WORLD, &Muesli::num_total_procs);
   MPI_Comm_rank(MPI_COMM_WORLD, &Muesli::proc_id);
-  #ifdef _OPENMP
+/*  #ifdef _OPENMP
     omp_set_nested(1);
-  #endif
+  #endif*/
 
 /*  if (1 <= argc) {
     Muesli::program_name = argv[0];
@@ -51,11 +51,11 @@ void msl::initSkeletons(bool debug_communication)
   Muesli::task_group_size = DEFAULT_TASK_GROUP_SIZE;
 //  Muesli::num_conc_kernels = DEFAULT_NUM_CONC_KERNELS;
 
-  #ifdef _OPENMP
+/*  #ifdef _OPENMP
     Muesli::num_threads = omp_get_max_threads();
   #else
     Muesli::num_threads = 1;
-  #endif
+  #endif*/
 
   Muesli::debug_communication = debug_communication;
   Muesli::num_runs = DEFAULT_NUM_RUNS;
@@ -85,7 +85,7 @@ void msl::terminateSkeletons()
 //    s << std::endl << "Name: " << Muesli::program_name << std::endl;
     s << "Proc: " << Muesli::num_total_procs << std::endl;
     s << "CPU only" << std::endl;
-    s << "Threads per proc: " << Muesli::num_threads << std::endl;
+//    s << "Threads per proc: " << Muesli::num_threads << std::endl;
     if (Muesli::use_timer) {
       s << s_time.str();
       delete timer;
@@ -113,7 +113,7 @@ void msl::terminateSkeletons()
   va_end(argp);
 }*/
 
-void msl::setNumThreads(int threads)
+/*void msl::setNumThreads(int threads)
 {
   #ifdef _OPENMP
     Muesli::num_threads = threads;
@@ -121,7 +121,7 @@ void msl::setNumThreads(int threads)
   #else
     Muesli::num_threads = 1;
   #endif
-}
+}*/
 
 void msl::setNumRuns(int runs)
 {
@@ -182,7 +182,7 @@ void bind_muesli(py::module& m) {
   m.def("initSkeletons", &msl::initSkeletons);
   m.def("terminateSkeletons", &msl::terminateSkeletons);
 //  m.def("printv", &msl::printv);
-  m.def("setNumThreads", &msl::setNumThreads);
+//  m.def("setNumThreads", &msl::setNumThreads);
   m.def("setNumRuns", &msl::setNumRuns);
   m.def("setTaskGroupSize", &msl::setTaskGroupSize);
   m.def("setFarmStatistics", &msl::setFarmStatistics);

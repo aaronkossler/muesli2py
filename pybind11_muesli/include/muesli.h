@@ -48,7 +48,7 @@ public:
   static int distribution_mode;         // for farm skeleton
   static int task_group_size;           // aggregated task group size (farm skeleton)
   static int num_conc_kernels;          // number of concurrent kernels (farm skeleton)
-  static int num_threads;               // number of CPU threads
+//  static int num_threads;               // number of CPU threads
   static int num_runs;                  // number of runs, for benchmarking
 //  static int num_gpus;                // number of GPUs
 //  static double cpu_fraction;           // fraction of each DA partition handled by CPU cores (rather than GPUs)
@@ -96,7 +96,7 @@ void terminateSkeletons();
  *
  * @param num_threads The number of CPU threads.
  */
-void setNumThreads(int num_threads);
+//void setNumThreads(int num_threads);
 
 /**
  * \brief Sets the number of runs for a benchmark application.

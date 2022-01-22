@@ -91,10 +91,10 @@ public:
     * @param f The mapIndex functor, must be of type \em AMapIndexFunctor.
     * @tparam MapIndexFunctor Functor type.
     */
-    void mapIndexInPlace(const std::function<T(T,T)> &f, int index);
+    void mapIndexInPlace(const std::function<T(int,T)> &f);
 
     //TODO: Add Description
-    void mapIndexInPlace(const std::function<T(T,T)> &f, int row, int col);
+    void mapIndexInPlace(const std::function<T(int,int,T)> &f);
 
     //TODO: Change Description
     /**
@@ -117,10 +117,10 @@ public:
     * @tparam R Return type.
     * @return The newly created distributed array.
     */
-    DM<T> mapIndex(const std::function<T(T,T)> &f, int index);
+    DM<T> mapIndex(const std::function<T(int,T)> &f);
 
     //TODO: Add Description
-    DM<T> mapIndex(const std::function<T(T,T)> &f, int row, int col);
+    DM<T> mapIndex(const std::function<T(int,int,T)> &f);
 
 
     //
@@ -246,8 +246,6 @@ private:
     int ncol;
     // Number of rows
     int nrow;
-//    // Pointer to array of elements
-//    int* elements;
     // Number of local elements
     int nLocal;
     // First (global) index of local partition
