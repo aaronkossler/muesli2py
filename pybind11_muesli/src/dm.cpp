@@ -1,7 +1,41 @@
-/* File: example.c */
+/*
+ * dm.cpp
+ *
+ *      Author: Herbert Kuchen <kuchen@uni-muenster.de>,
+ *              Steffen Ernsting <s.ernsting@uni-muenster.de>,
+ *              Nina Herrmann <nina.herrmann@uni-muenster.de>
+ *
+ * ---------------------------------------------------------------------------------------------------
+ *
+ * The MIT License
+ *
+ * Copyright 2014-2020 Steffen Ernsting <s.ernsting@uni-muenster.de>,
+ *                     Herbert Kuchen <kuchen@uni-muenster.de,
+ *                     Nina Herrmann <nina.herrmann@uni-muenster.de>.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
 
 #include "../include/muesli.h"
 #include "../include/dm.h"
+#include "../include/pixel.h"
 
 //#include <stdexcept>
 //#include <iostream>
@@ -68,7 +102,7 @@ void msl::DM<T>::init() {
 // destructor removes a DM
 template<typename T>
 msl::DM<T>::~DM() {
-  printf("Destructor\n");
+  //printf("Destructor\n");
   //delete[] localPartition;
 }
 
@@ -81,6 +115,16 @@ void msl::DM<T>::fill(const T& value) {
 }
 
 // **************************** auxiliary methods ****************************
+template<typename T>
+int msl::DM<T>::getRows() {
+    return nrow;
+}
+
+template<typename T>
+int msl::DM<T>::getCols() {
+    return ncol;
+}
+
 template<typename T>
 T* msl::DM<T>::getLocalPartition() {
   return localPartition;
@@ -245,6 +289,18 @@ void msl::DM<T>::mapIndexInPlace(const std::function<T(int,int,T)> &f) {
 }
 
 template<typename T>
+void msl::DM<T>::mapIndexInPlaceM(const std::function<T(int,int,T)> &f) {
+
+  // all necessary calculations are performed otherwise some are skipped.
+  #pragma acc parallel loop
+  for (int k = 0; k < nCPU; k++) {
+    int row = (k + firstIndex) / ncol;
+    int col = (k + firstIndex) % ncol;
+    localPartition[k] = f(row, col, localPartition[k]);
+  }
+}
+
+template<typename T>
 msl::DM<T> msl::DM<T>::map(const std::function<T(T)> &f) {
     DM<T> result(ncol, nrow);
 
@@ -283,32 +339,49 @@ msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(int,int,T)> &f) {
     return result;
 }
 
+// TODO: Fix overload_cast
+
 void bind_dm(py::module& m) {
-    py::class_<msl::DM<int>>(
-			m, "Pydm"
-			)
-    .def(py::init())
-	.def(py::init<int, int>())
-	.def(py::init<int, int, int>())
-	.def("fill", &msl::DM<int>::fill)
-//	.def("setElements", &msl::DM<int>::setElements)
-//	.def("printmatrix", &msl::DM<int>::printmatrix)
-	.def("mapInPlace", &msl::DM<int>::mapInPlace)
-	.def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &>(&msl::DM<int>::mapIndexInPlace))
-	.def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int,int)> &>(&msl::DM<int>::mapIndexInPlace))
-	.def("map", &msl::DM<int>::map)
-	.def("mapIndex", py::overload_cast<const std::function<int(int,int)> &>(&msl::DM<int>::mapIndex))
-	.def("mapIndex", py::overload_cast<const std::function<int(int,int,int)> &>(&msl::DM<int>::mapIndex))
-    .def("getLocalPartition", &msl::DM<int>::getLocalPartition)
-//    .def("setLocalPartition", &msl::DM<int>::setLocalPartition)
-    .def("get", &msl::DM<int>::get)
-    .def("set", &msl::DM<int>::set)
-    .def("showLocal", &msl::DM<int>::showLocal)
-    .def("show", &msl::DM<int>::show)
-    .def("getSize", &msl::DM<int>::getSize)
-    .def("getLocalSize", &msl::DM<int>::getLocalSize)
-    .def("getFirstIndex", &msl::DM<int>::getFirstIndex)
-    .def("getLocal", &msl::DM<int>::getLocal)
-    .def("setLocal", &msl::DM<int>::setLocal)
+    py::class_<msl::DM<int>>(m, "Pydm")
+        .def(py::init())
+        .def(py::init<int, int>())
+        .def(py::init<int, int, int>())
+        .def("fill", &msl::DM<int>::fill)
+    //	.def("setElements", &msl::DM<int>::setElements)
+    //	.def("printmatrix", &msl::DM<int>::printmatrix)
+        .def("mapInPlace", &msl::DM<int>::mapInPlace)
+        .def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &>(&msl::DM<int>::mapIndexInPlace))
+        .def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int,int)> &>(&msl::DM<int>::mapIndexInPlace))
+        .def("map", &msl::DM<int>::map)
+        .def("mapIndex", py::overload_cast<const std::function<int(int,int)> &>(&msl::DM<int>::mapIndex))
+        .def("mapIndex", py::overload_cast<const std::function<int(int,int,int)> &>(&msl::DM<int>::mapIndex))
+        .def("getLocalPartition", &msl::DM<int>::getLocalPartition)
+    //    .def("setLocalPartition", &msl::DM<int>::setLocalPartition)
+        .def("getRows", &msl::DM<int>::getRows)
+        .def("getCols", &msl::DM<int>::getCols)
+        .def("get", &msl::DM<int>::get)
+        .def("set", &msl::DM<int>::set)
+        .def("showLocal", &msl::DM<int>::showLocal)
+        .def("show", &msl::DM<int>::show)
+        .def("getSize", &msl::DM<int>::getSize)
+        .def("getLocalSize", &msl::DM<int>::getLocalSize)
+        .def("getFirstIndex", &msl::DM<int>::getFirstIndex)
+        .def("getLocal", &msl::DM<int>::getLocal)
+        .def("setLocal", &msl::DM<int>::setLocal)
+    ;
+    py::class_<msl::DM<Pixel>>(m, "Mandelbrot")
+        .def(py::init<int, int, Pixel>())
+        .def("getRows", &msl::DM<Pixel>::getRows)
+        .def("getCols", &msl::DM<Pixel>::getCols)
+        .def("get", &msl::DM<Pixel>::get)
+        .def("mapIndexInPlace", py::overload_cast<const std::function<Pixel(int,Pixel)> &>(&msl::DM<Pixel>::mapIndexInPlace))
+        .def("mapIndexInPlace", py::overload_cast<const std::function<Pixel(int,int,Pixel)> &>(&msl::DM<Pixel>::mapIndexInPlace))
+        .def("mapIndexInPlaceM", &msl::DM<Pixel>::mapIndexInPlaceM)
+    ;
+    py::class_<Pixel>(m, "Pixel")
+        .def(py::init<>())
+        .def_readwrite("r", &Pixel::r)
+        .def_readwrite("g", &Pixel::g)
+        .def_readwrite("b", &Pixel::b)
     ;
 }

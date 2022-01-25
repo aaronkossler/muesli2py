@@ -70,11 +70,11 @@ void msl::terminateSkeletons()
 {
   std::ostringstream s;
   std::ostringstream s_time;
-  if (isRootProcess())
-    printf("debug: terminating skeletons\n");
+/*  if (isRootProcess())
+    printf("debug: terminating skeletons\n");*/
   MPI_Barrier(MPI_COMM_WORLD);
-  if (isRootProcess())
-    printf("debug: behind barrier\n");
+/*  if (isRootProcess())
+    printf("debug: behind barrier\n");*/
 
   if (Muesli::use_timer) {
     double total_time = timer->totalTime();
@@ -95,8 +95,8 @@ void msl::terminateSkeletons()
 
     printf("%s", s.str().c_str());
   }
-  if (isRootProcess())
-    printf("debug: behind output of run time statistics\n");
+  /*if (isRootProcess())
+    printf("debug: behind output of run time statistics\n");*/
 
   MPI_Finalize();
   Muesli::running_proc_no = 0;
@@ -187,5 +187,8 @@ void bind_muesli(py::module& m) {
   m.def("setTaskGroupSize", &msl::setTaskGroupSize);
   m.def("setFarmStatistics", &msl::setFarmStatistics);
   m.def("fail_exit", &msl::fail_exit);
-
+  m.def("isRootProcess", &msl::isRootProcess);
+  py::class_<msl::Muesli>(m, "Muesli")
+      .def_readonly_static("num_runs",  &msl::Muesli::num_runs)
+  ;
 }

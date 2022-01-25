@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 
 #include <type_traits>
 #include "muesli.h"
@@ -96,6 +96,9 @@ public:
     //TODO: Add Description
     void mapIndexInPlace(const std::function<T(int,int,T)> &f);
 
+    //TODO: Add Description
+    void mapIndexInPlaceM(const std::function<T(int,int,T)> &f);
+
     //TODO: Change Description
     /**
     * \brief Returns a new distributed array with a_new[i] = f(a[i]).
@@ -126,6 +129,10 @@ public:
     //
     // GETTERS AND SETTERS
     //
+
+    int getRows();
+
+    int getCols();
 
     /**
     * \brief Returns the local partition.

@@ -15,11 +15,11 @@ mate = Pydm(10, 10, 5)
 # mate.show()
 
 
-def test(i):
-    return i * i
+def test(i, j):
+    return i * j
 
 
 mate.show()
-mate.mapInPlace(test)
+mate.mapIndexInPlace(test)
 mate.show()
 terminateSkeletons()
