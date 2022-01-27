@@ -15,7 +15,7 @@ def write_ppm(out_img, filename):
     for y in range(0, rows):
         for x in range(0, cols):
             p = out_img.get(y*cols+x)
-            ofs.write(str(p.r) + " " + str(p.g) + " " + str(p.b) + "  ")
+            ofs.write(str(int(p.r)) + " " + str(int(p.g)) + " " + str(int(p.b)) + "  ")
 
     with open(filename, "w") as fd:
         ofs.seek(0)
@@ -65,42 +65,44 @@ def test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output):
 
 
 # main
-initSkeletons(False)
+if __name__ == "__main__":
 
-rows, cols, n_runs, n_gpus = 1000, 1000, 1, 1
-max_iters, zoom = 1000, 800
-output, warmup = 1, 0
+    initSkeletons(False)
 
-if len(sys.argv) < 7:
-    if isRootProcess:
-        print("Usage: " + sys.argv[0] + " #rows #cols #maxIters #zoom #nRuns #nGPUs")
-        string = "Default values: rows = " + str(rows) + \
-                 ", cols = " + str(cols) + \
-                 ", maxIters = " + str(max_iters) + \
-                 ", zoom = " + str(zoom) + \
-                 ", n_runs = " + str(n_runs) + \
-                 ", n_gpus = " + str(n_gpus)
-        print(string)
-else:
-    rows = int(sys.argv[1])
-    cols = int(sys.argv[2])
-    max_iters = int(sys.argv[3])
-    zoom = int(sys.argv[4])
-    n_runs = int(sys.argv[5])
-    n_gpus = int(sys.argv[6])
-    output = True
-    print(str(rows) + ";" + str(cols) + ";" + str(max_iters) + ";" + str(zoom) + ";" + str(n_runs) + ";" + str(n_gpus))
+    rows, cols, n_runs, n_gpus = 1000, 1000, 1, 1
+    max_iters, zoom = 1000, 800
+    output, warmup = 1, 0
 
-# setNumRuns(n_runs)
-center_x = -0.73
-center_y = 0.0
+    if len(sys.argv) < 7:
+        if isRootProcess():
+            print("Usage: " + sys.argv[0] + " #rows #cols #maxIters #zoom #nRuns #nGPUs")
+            string = "Default values: rows = " + str(rows) + \
+                     ", cols = " + str(cols) + \
+                     ", maxIters = " + str(max_iters) + \
+                     ", zoom = " + str(zoom) + \
+                     ", n_runs = " + str(n_runs) + \
+                     ", n_gpus = " + str(n_gpus)
+            print(string)
+    else:
+        rows = int(sys.argv[1])
+        cols = int(sys.argv[2])
+        max_iters = int(sys.argv[3])
+        zoom = int(sys.argv[4])
+        n_runs = int(sys.argv[5])
+        n_gpus = int(sys.argv[6])
+        output = True
+        print(str(rows) + ";" + str(cols) + ";" + str(max_iters) + ";" + str(zoom) + ";" + str(n_runs) + ";" + str(n_gpus))
 
-if warmup:
-    test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, False)
+    setNumRuns(n_runs)
+    center_x = -0.73
+    center_y = 0.0
 
-start = timeit.default_timer()
-for run in range(0, n_runs):
-    test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output)
-stop = timeit.default_timer()
+    if warmup:
+        test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, False)
 
-terminateSkeletons()
+    start = timeit.default_timer()
+    for run in range(0, getNumRuns()):
+        test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output)
+    stop = timeit.default_timer()
+
+    terminateSkeletons()

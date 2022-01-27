@@ -123,6 +123,11 @@ void msl::terminateSkeletons()
   #endif
 }*/
 
+int msl::getNumRuns()
+{
+    return Muesli::num_runs;
+}
+
 void msl::setNumRuns(int runs)
 {
   Muesli::num_runs = runs;
@@ -184,6 +189,7 @@ void bind_muesli(py::module& m) {
 //  m.def("printv", &msl::printv);
 //  m.def("setNumThreads", &msl::setNumThreads);
   m.def("setNumRuns", &msl::setNumRuns);
+  m.def("getNumRuns", &msl::getNumRuns);
   m.def("setTaskGroupSize", &msl::setTaskGroupSize);
   m.def("setFarmStatistics", &msl::setFarmStatistics);
   m.def("fail_exit", &msl::fail_exit);

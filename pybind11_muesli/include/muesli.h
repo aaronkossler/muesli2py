@@ -99,6 +99,11 @@ void terminateSkeletons();
 //void setNumThreads(int num_threads);
 
 /**
+ * \brief Gets the number of runs for a benchmark application.
+ */
+    int getNumRuns();
+
+/**
  * \brief Sets the number of runs for a benchmark application.
  *
  * @param num_runs The number of runs for a benchmark application.
