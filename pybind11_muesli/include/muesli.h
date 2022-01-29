@@ -50,7 +50,7 @@ public:
   static int num_conc_kernels;          // number of concurrent kernels (farm skeleton)
 //  static int num_threads;               // number of CPU threads
   static int num_runs;                  // number of runs, for benchmarking
-//  static int num_gpus;                // number of GPUs
+  static int num_gpus;                // number of GPUs
 //  static double cpu_fraction;           // fraction of each DA partition handled by CPU cores (rather than GPUs)
 //  static int max_gpus;                // maximum number of GPUs of each process
 //  static int threads_per_block;         // for one dimensional GPU thread blocks (DArray)
@@ -102,6 +102,11 @@ void terminateSkeletons();
  * \brief Gets the number of runs for a benchmark application.
  */
     int getNumRuns();
+
+/**
+ * \brief Gets the number of GPUs for a benchmark application.
+ */
+    int getNumGpus();
 
 /**
  * \brief Sets the number of runs for a benchmark application.

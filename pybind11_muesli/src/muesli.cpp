@@ -6,6 +6,7 @@
 //#include <mpi.h>
 //#include <iostream>
 #include "../include/muesli.h"
+#include <openacc.h>
 
 int msl::Muesli::proc_id;
 int msl::Muesli::proc_entrance;
@@ -19,7 +20,7 @@ int msl::Muesli::task_group_size;
 //int msl::Muesli::num_conc_kernels;
 //int msl::Muesli::num_threads;
 int msl::Muesli::num_runs;
-//int msl::Muesli::num_gpus;
+int msl::Muesli::num_gpus;
 //int msl::Muesli::max_gpus;
 //double msl::Muesli::cpu_fraction = 0.2; // fraction of each DA partition handled by CPU cores (rather than GPUs)
 //int msl::Muesli::threads_per_block;
@@ -93,7 +94,7 @@ void msl::terminateSkeletons()
       s << "Total time: " << MPI_Wtime() - Muesli::start_time << "s" << std::endl;
     }
 
-    printf("%s", s.str().c_str());
+//    printf("%s", s.str().c_str());
   }
   /*if (isRootProcess())
     printf("debug: behind output of run time statistics\n");*/
@@ -126,6 +127,11 @@ void msl::terminateSkeletons()
 int msl::getNumRuns()
 {
     return Muesli::num_runs;
+}
+
+int msl::getNumGpus()
+{
+    return Muesli::num_gpus;
 }
 
 void msl::setNumRuns(int runs)
@@ -190,6 +196,7 @@ void bind_muesli(py::module& m) {
 //  m.def("setNumThreads", &msl::setNumThreads);
   m.def("setNumRuns", &msl::setNumRuns);
   m.def("getNumRuns", &msl::getNumRuns);
+  m.def("getNumGpus", &msl::getNumGpus);
   m.def("setTaskGroupSize", &msl::setTaskGroupSize);
   m.def("setFarmStatistics", &msl::setFarmStatistics);
   m.def("fail_exit", &msl::fail_exit);

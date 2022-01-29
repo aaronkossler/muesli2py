@@ -11,21 +11,28 @@ initSkeletons(False)
 # def two(i, j):
 #     return i*j
 #
-mate = Pydm(10, 10, 5)
+# mate = Pydm(10, 10, 5)
 # mate.show()
 
 
-class Example:
-    def __init__(self):
-        self.x = 10
-        self.y = 20
+# class Example:
+#     def __init__(self):
+#         self.x = 10
+#         self.y = 20
+#
+#     def test(self, i, j):
+#         return i * j * self.x * self.y
+#
+#
+# mate.show()
+# e = Example()
+# mate.mapIndexInPlace(e.test)
+# mate.show()
 
-    def test(self, i, j):
-        return i * j * self.x * self.y
+p = Pixel()
+p.r = 0
+p.g = 0
+p.g = 255
+m = Mandelbrot(10, 10, p)
 
-
-mate.show()
-e = Example()
-mate.mapIndexInPlace(e.test)
-mate.show()
 terminateSkeletons()
