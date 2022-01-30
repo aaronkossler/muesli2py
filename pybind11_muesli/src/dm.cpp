@@ -94,9 +94,9 @@ void msl::DM<T>::init() {
   nCPU = nLocal;
   firstIndex =  id * nLocal;
   localPartition = new T[nLocal];
-  printf("loc processes %d , First index %d\n", Muesli::num_local_procs, firstIndex);
-  printf("Building datastructure with %d nodes and %d cpus\n", msl::Muesli::num_total_procs,
-         msl::Muesli::num_local_procs);
+  // printf("loc processes %d , First index %d\n", Muesli::num_local_procs, firstIndex);
+  // printf("Building datastructure with %d nodes and %d cpus\n", msl::Muesli::num_total_procs,
+  //        msl::Muesli::num_local_procs);
 }
 
 // destructor removes a DM
