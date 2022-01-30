@@ -3,20 +3,23 @@
 ## This file needs to be adapted to your needs
 ##
 #SBATCH --export NONE
-#SBATCH --nodes 1
+#SBATCH --nodes 8
 #SBATCH --ntasks-per-node 1 
 #SBATCH --cpus-per-task 32
 ##  no GPUs
 #SBATCH --partition broadwell
-#SBATCH --time 5:00:00
+#SBATCH --time 20:00:00
 #SBATCH --exclusive
 
-#SBATCH --job-name Muesli3-CPU-mandelbrot-parallel
-#SBATCH --output /scratch/tmp/n_herr03/mandelbrot/cpuparallel.csv
-#SBATCH --error /scratch/tmp/n_herr03/mandelbrot/cpuparallel.error
+#SBATCH --job-name MPI-mandelbrot-parallel
+#SBATCH --output /scratch/tmp/n_herr03/aaron
+#SBATCH --error /scratch/tmp/n_herr03/aaron
 #SBATCH --mail-type ALL
 #SBATCH --mail-user n_herr03@uni-muenster.de
 
+
+cd /home/n/n_herr03/muesli2py/pybind11_muesli/
+#module load CMake/3.15.3
 module load palma/2021a  GCC/10.3.0  OpenMPI/4.1.1
 module load CMake/3.15.3
 module load SciPy-bundle/2021.05
@@ -33,6 +36,7 @@ module load SciPy-bundle/2021.05
 for row in 1000 2000 3000 4000 5000; do
     for maxIters in 1000 2000 3000 4000 5000; do
         for zoom in 800 1000 1200 14000; do
+<<<<<<< HEAD
         for nRuns in 30; do
         for nGPUs in 1; do
     		    for file in ~/muesli3/build/bin/*cpu; do
@@ -40,8 +44,16 @@ for row in 1000 2000 3000 4000 5000; do
       			mpirun -np $np python3.9 $file $row $row $maxIters $zoom $nRuns $nGPU 0 0
     		    done
         done
+=======
+            for nRuns in 30; do
+                for nGPUs in 1; do
+		    for np in 1 2 4 8; do
+      			mpirun -np $np python3 mandelbrot.de.py $row $row $maxIters $zoom $nRuns $nGPU 0 0
+		    done
+                done
+            done
+>>>>>>> Ninas changes on Palma
         done
-    done
     done
 done
 
