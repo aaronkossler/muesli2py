@@ -1,11 +1,11 @@
 # ALPHA muesli2py
 muesli2py is developed to supply the functionalities of muesli in python code. For a minimal prototype the following features are essential:
-- [ ] configure setup.py to support 
+- [x] configure setup.py to support 
     - [x] mpi
     - [ ] cuda OPTIONAL!([probably a good example](https://github.com/rmcgibbo/npcuda-example/blob/master/cython/setup.py))
-    - [ ] (openacc)
-    - [x] openmp
-- [ ] support for DA/DM (distributed arrays - distributed matrices)
+    - [x] (openacc)
+    - [x] openmp (Threading Conflict with GIL)
+- [x] support for DA/DM (distributed arrays - distributed matrices)
     - [x] research alternatives to include classes (swig (support for parallelization frameworks?), Python class) 
        - [x] swig works (see swig_muesli)
        - [x] pybind11 works (see pybind11_muesli) --> framework of choice
@@ -13,7 +13,7 @@ muesli2py is developed to supply the functionalities of muesli in python code. F
       - [x] multi-constructors 
       - [x] missing templates 
     - [x] nparray ([C-API](https://numpy.org/doc/stable/user/c-info.html), [writing extension modules](https://numpy.org/doc/stable/user/c-info.how-to-extend.html#writing-an-extension-module))
-- [ ] map + variations
+- [x] map + variations
   - [x] how can userfunctions be pased as arguments? --> functional.h in pybind11
 - [ ] ...
 
