@@ -66,7 +66,7 @@ class Iterate:
 
 def test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output):
     p = Pixel()
-    p.g = 255
+    # p.g = 255
 
     mandelbrot = Mandelbrot(rows, cols, p)
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     initSkeletons(False)
 
     rows, cols, n_runs, n_gpus = 1000, 1000, 1, 1
-    max_iters, zoom = 1000, 800
+    max_iters, zoom = 1000, 400
     output, warmup = 1, 0
 
     if isRootProcess():

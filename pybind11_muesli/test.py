@@ -6,33 +6,18 @@ from build.muesli import *
 # time.sleep(10)
 
 initSkeletons(False)
-#setNumRuns(4)
-#
-# def two(i, j):
-#     return i*j
-#
-# mate = Pydm(10, 10, 5)
-# mate.show()
 
 
-# class Example:
-#     def __init__(self):
-#         self.x = 10
-#         self.y = 20
-#
-#     def test(self, i, j):
-#         return i * j * self.x * self.y
-#
-#
-# mate.show()
-# e = Example()
-# mate.mapIndexInPlace(e.test)
-# mate.show()
+def test(row, col, value):
+    return row * col * value
 
-p = Pixel()
-p.r = 0
-p.g = 0
-p.g = 255
-m = Mandelbrot(10, 10, p)
+
+def mest(index, value):
+    return index * value
+
+
+dm = intDM(6, 6, 2)
+test = dm.mapIndex(test)
+test.show()
 
 terminateSkeletons()

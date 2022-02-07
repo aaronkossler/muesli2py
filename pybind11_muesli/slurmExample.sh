@@ -37,7 +37,7 @@ for row in 1000 2000 3000 4000 5000; do
         for nGPUs in 1; do
     		    for file in ~/muesli3/build/bin/*cpu; do
             for np in 1 2 4 8; do
-      			mpirun -np $np python3.9 $file $row $row $maxIters $zoom $nRuns $nGPU
+      			mpirun -np $np python3.9 $file $row $row $maxIters $zoom $nRuns $nGPU 0 0
     		    done
         done
         done
