@@ -75,8 +75,8 @@ def test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output):
 
     image = convert(mandelbrot)
 
-    if output:
-        ppm(cols, rows, 255, image)
+    #if output:
+        #ppm(cols, rows, 255, image)
 
 
 # main

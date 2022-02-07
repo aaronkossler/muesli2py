@@ -4,7 +4,7 @@ project(pybind11_muesli)
 find_package(PythonLibs)
 include_directories(${PYTHON_INCLUDE_DIRS})
 
-find_package(OpenACC REQUIRED)
+#find_package(OpenACC REQUIRED)
 find_package(MPI REQUIRED)
 
 set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS} ${OPENACC_CXX_FLAGS})
