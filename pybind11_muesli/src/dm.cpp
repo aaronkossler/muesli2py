@@ -36,14 +36,6 @@
 #include "../include/muesli.h"
 #include "../include/dm.h"
 #include "../include/pixel.h"
-
-//#include <stdexcept>
-//#include <iostream>
-//#include <stdlib.h>
-//#include <stdio.h>
-//#include <error.h>
-//#include <omp.h>
-//#include <mpi.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
@@ -130,13 +122,21 @@ T* msl::DM<T>::getLocalPartition() {
   return localPartition;
 }
 
-/*template<typename T>
+template<typename T>
 void msl::DM<T>::setLocalPartition(py::array_t<T> array) {
     #pragma acc parallel loop
     for (int k = 0; k < nCPU; k++) {
         localPartition[k] = *array.data(k);
     }
-}*/
+}
+
+template<typename T>
+void msl::DM<T>::setMatrix(py::array_t<T> array) {
+    #pragma acc parallel loop
+    for (int k = 0; k < nCPU; k++) {
+        localPartition[k] = *array.data(firstIndex+k);
+    }
+}
 
 template<typename T>
 T msl::DM<T>::get(int index) const {
@@ -243,18 +243,27 @@ void msl::DM<T>::show() {
   if (msl::isRootProcess()) printf("%s", s.str().c_str());
 }
 
-/*template<typename T>
-void msl::DM<T>::printmatrix() {
-    #pragma acc parallel loop
-    for (int i = 0; i< nrow; i++) {
-    printf("|");
-        #pragma acc parallel loop
-        for (int j = 0; j< ncol; j++) {
-            printf("%d;", elements[nrow*i+j]);
-        }
-    printf("|\n");
-    }
-}*/
+// SKELETONS / COMMUNICATION / GATHER
+
+template<typename T>
+py::array_t<T> msl::DM<T>::gather() {
+    T* array = new T[n];
+    msl::allgather(localPartition, array, nLocal);
+
+    // Create a Python object that will free the allocated
+    // memory when destroyed:
+    py::capsule free_when_done(array, [](void *f) {
+        double *array = reinterpret_cast<double *>(f);
+//        std::cerr << "Element [0] = " << array[0] << "\n";
+//        std::cerr << "freeing memory @ " << f << "\n";
+        delete[] array;
+    });
+
+    return py::array_t<T>(
+            {n,}, // shape
+            array, // the data pointer
+            free_when_done); // numpy array references this parent
+}
 
 //*********************************** Maps ***********************************
 template<typename T>
@@ -339,16 +348,15 @@ msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(int,int,T)> &f) {
     return result;
 }
 
+
 // TODO: Fix overload_cast
 
 void bind_dm(py::module& m) {
-    py::class_<msl::DM<int>>(m, "Pydm")
+    py::class_<msl::DM<int>>(m, "intDM")
         .def(py::init())
         .def(py::init<int, int>())
         .def(py::init<int, int, int>())
         .def("fill", &msl::DM<int>::fill)
-    //	.def("setElements", &msl::DM<int>::setElements)
-    //	.def("printmatrix", &msl::DM<int>::printmatrix)
         .def("mapInPlace", &msl::DM<int>::mapInPlace)
         .def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &>(&msl::DM<int>::mapIndexInPlace))
         .def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int,int)> &>(&msl::DM<int>::mapIndexInPlace))
@@ -356,8 +364,24 @@ void bind_dm(py::module& m) {
         .def("map", &msl::DM<int>::map)
         .def("mapIndex", py::overload_cast<const std::function<int(int,int)> &>(&msl::DM<int>::mapIndex))
         .def("mapIndex", py::overload_cast<const std::function<int(int,int,int)> &>(&msl::DM<int>::mapIndex))
+//        .def("mapIndex",[](py::function &f) {
+//              py::print(py::detail::get_function(f));
+//              pybind11::module inspect_module = pybind11::module::import("inspect");
+//              pybind11::object result = inspect_module.attr("signature")(f).attr("parameters");
+//              auto num_params = pybind11::len(result);
+//              msl::DM<int> dm;
+//              if (num_params == 2)
+//              {
+//                  return dm.mapIndex(py::cast<const std::function<int(int,int)> >(f));
+//              }
+//              else if (num_params == 3)
+//              {
+//                  return dm.mapIndex(py::cast<const std::function<int(int,int,int)> >(f));
+//              }
+//          })
         .def("getLocalPartition", &msl::DM<int>::getLocalPartition)
-    //    .def("setLocalPartition", &msl::DM<int>::setLocalPartition)
+        .def("setLocalPartition", &msl::DM<int>::setLocalPartition)
+        .def("setMatrix", &msl::DM<int>::setMatrix)
         .def("getRows", &msl::DM<int>::getRows)
         .def("getCols", &msl::DM<int>::getCols)
         .def("get", &msl::DM<int>::get)
@@ -369,6 +393,7 @@ void bind_dm(py::module& m) {
         .def("getFirstIndex", &msl::DM<int>::getFirstIndex)
         .def("getLocal", &msl::DM<int>::getLocal)
         .def("setLocal", &msl::DM<int>::setLocal)
+        .def("gather", &msl::DM<int>::gather)
     ;
     py::class_<msl::DM<Pixel>>(m, "Mandelbrot")
         .def(py::init<int, int, Pixel>())

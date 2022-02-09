@@ -70,8 +70,6 @@ if __name__ == "__main__":
         n_runs = int(sys.argv[5])
         n_gpus = int(sys.argv[6])
         output = True
-        print(str(rows) + ";" + str(cols) + ";" + str(max_iters) + ";" + str(zoom) + ";" + str(n_runs) + ";" + str(
-            n_gpus))
 
     center_x = -0.73
     center_y = 0.0
@@ -82,4 +80,4 @@ if __name__ == "__main__":
     stop = timeit.default_timer()
 
     print(str(rows) + ";" + str(cols) + ";" + str(max_iters) + ";" + str(zoom) + ";" + str(n_runs) + ";" + str(
-        n_gpus) + ";" + str(stop - start) + ";")
+        n_gpus) + ";" + str((stop - start)/n_runs) + ";")
