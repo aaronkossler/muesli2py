@@ -253,7 +253,7 @@ py::array_t<T> msl::DM<T>::gather() {
     // Create a Python object that will free the allocated
     // memory when destroyed:
     py::capsule free_when_done(array, [](void *f) {
-        double *array = reinterpret_cast<double *>(f);
+        T *array = reinterpret_cast<T *>(f);
 //        std::cerr << "Element [0] = " << array[0] << "\n";
 //        std::cerr << "freeing memory @ " << f << "\n";
         delete[] array;

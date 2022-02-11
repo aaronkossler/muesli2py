@@ -24,5 +24,6 @@ test.show()
 t = test.gather()
 if isRootProcess():
     print(t)
+    print(t.shape)
 
 terminateSkeletons()
