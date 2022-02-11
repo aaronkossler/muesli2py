@@ -43,7 +43,7 @@ def test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output):
         row = int(x / cols)
         cal_pixel(image, row, col, max_iters, l, t, dx, dy)
 
-    ppm(cols, rows, 255, image)
+    #ppm(cols, rows, 255, image)
 
 
 # main
