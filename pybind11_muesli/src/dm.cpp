@@ -405,14 +405,14 @@ void bind_dm(py::module& m) {
         .def("mapIndexInPlaceM", &msl::DM<Pixel>::mapIndexInPlaceM)
     ;
     py::class_<msl::DM<float>>(m, "floatDM")
-            .def(py::init<int, int, float>())
-            .def("getRows", &msl::DM<float>::getRows)
-            .def("getCols", &msl::DM<float>::getCols)
-            .def("get", &msl::DM<float>::get)
-            .def("mapIndexInPlace", py::overload_cast<const std::function<float(int,float)> &>(&msl::DM<float>::mapIndexInPlace))
-            .def("mapIndexInPlace", py::overload_cast<const std::function<float(int,int,float)> &>(&msl::DM<float>::mapIndexInPlace))
-            .def("mapIndexInPlaceM", &msl::DM<float>::mapIndexInPlaceM)
-            ;
+        .def(py::init<int, int, float>())
+        .def("getRows", &msl::DM<float>::getRows)
+        .def("getCols", &msl::DM<float>::getCols)
+        .def("get", &msl::DM<float>::get)
+        .def("mapIndexInPlace", py::overload_cast<const std::function<float(int,float)> &>(&msl::DM<float>::mapIndexInPlace))
+        .def("mapIndexInPlace", py::overload_cast<const std::function<float(int,int,float)> &>(&msl::DM<float>::mapIndexInPlace))
+        .def("mapIndexInPlaceM", &msl::DM<float>::mapIndexInPlaceM)
+    ;
     py::class_<Pixel>(m, "Pixel")
         .def(py::init<>())
         .def_readwrite("r", &Pixel::r)

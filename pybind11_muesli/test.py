@@ -1,4 +1,4 @@
-import numpy as np
+# import numpy as np
 import time
 from build.muesli import *
 
@@ -25,5 +25,14 @@ t = test.gather()
 if isRootProcess():
     print(t)
     print(t.shape)
+    print(t.ndim)
+    print(t.size)
+
+b = intDM(4, 4, 3)
+c = b.gather()
+
+d = numpy.concatenate((t, c), axis=0)
+if isRootProcess():
+    print(d)
 
 terminateSkeletons()
