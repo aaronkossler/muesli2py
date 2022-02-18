@@ -1,5 +1,5 @@
 import sys
-import timeit
+import time
 from io import StringIO
 import shutil
 import numpy as np
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     initSkeletons(False)
 
-    rows, cols, n_runs, n_gpus = 1000, 1000, 1, 1
+    rows, cols, n_runs, n_gpus = 1000, 1000, 2, 1
     max_iters, zoom = 1000, 800
     output, warmup = 1, 0
 
@@ -117,13 +117,13 @@ if __name__ == "__main__":
     if warmup:
         test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, False)
 
-    t = Timer()
+    start = time.time()
     runs = getNumRuns()
     for run in range(runs):
         test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output)
-    time = t.stop()
+    stop = time.time()
     if isRootProcess():
         print(str(rows) + ";" + str(cols) + ";" + str(max_iters) + ";" + str(zoom) + ";" + str(n_runs) + ";" + str(
-            n_gpus) + ";" + str(time/n_runs) + ";")
+            n_gpus) + ";" + str((stop - start)/n_runs) + ";")
 
     terminateSkeletons()
