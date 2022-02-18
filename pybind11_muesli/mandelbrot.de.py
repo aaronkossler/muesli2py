@@ -84,12 +84,12 @@ if __name__ == "__main__":
 
     initSkeletons(False)
 
-    rows, cols, n_runs, n_gpus = 1000, 1000, 1, 1
-    max_iters, zoom = 1000, 400
+    rows, cols, n_runs, n_gpus = 1000, 1000, 2, 1
+    max_iters, zoom = 1000, 800
     output, warmup = 1, 0
 
-    if isRootProcess():
-        print("rows;cols;maxIters;zoom;nRuns;nGPUS;averagetime;")
+    # if isRootProcess():
+    #     print("rows;cols;maxIters;zoom;nRuns;nGPUS;averagetime;")
 
     if len(sys.argv) < 7:
         if isRootProcess():
