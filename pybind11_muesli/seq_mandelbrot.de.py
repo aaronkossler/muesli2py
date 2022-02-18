@@ -1,6 +1,7 @@
 import sys
 import timeit
 import array
+import time
 
 
 def ppm(width, height, maxval, image):
@@ -76,10 +77,10 @@ if __name__ == "__main__":
     center_x = -0.73
     center_y = 0.0
 
-    start = timeit.default_timer()
+    start = time.time()
     for run in range(n_runs):
         test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output)
-    stop = timeit.default_timer()
+    stop = time.time()
 
     print(str(rows) + ";" + str(cols) + ";" + str(max_iters) + ";" + str(zoom) + ";" + str(n_runs) + ";" + str(
-        n_gpus) + ";" + str(stop - start) + ";")
+        n_gpus) + ";" + str((stop - start)/n_runs) + ";")
