@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 
 #include <type_traits>
 #include "muesli.h"
@@ -66,6 +66,7 @@ public:
     */
     void fill(const T& value);
 
+    //TODO: 4 fills
 
     //
     // SKELETONS / COMPUTATION
@@ -77,86 +78,61 @@ public:
     /**
     * \brief Replaces each element a[i] of the distributed array with f(a[i]).
     *
-    * @param f Python function.
+    * @param f The map functor, must be of type \em AMapFunctor.
+    * @tparam MapFunctor Functor type.
     */
     void mapInPlace(const std::function<T(T)> &f);
 
+    //TODO: Change Description
     /**
     * \brief Replaces each element a[i] of the distributed array with f(i, a[i]).
     *        Note that besides the element itself also its index is passed to the
-    *        function.
+    *        functor.
     *
-    * @param f Python function.
+    * @param f The mapIndex functor, must be of type \em AMapIndexFunctor.
+    * @tparam MapIndexFunctor Functor type.
     */
     void mapIndexInPlace(const std::function<T(int,T)> &f);
 
-    /**
-    * \brief Replaces each element a[i] of the distributed array with f(row, column, a[i]).
-    *        Note that besides the element itself also its row and column is passed to the
-    *        function.
-    *
-    * @param f Python function.
-    */
+    //TODO: Add Description
     void mapIndexInPlace(const std::function<T(int,int,T)> &f);
 
     //TODO: Add Description
     void mapIndexInPlaceM(const std::function<T(int,int,T)> &f);
 
+    //TODO: Change Description
     /**
     * \brief Returns a new distributed array with a_new[i] = f(a[i]).
     *
-    * @param f Python function.
+    * @param f The map functor, must be of type \em AMapFunctor.
+    * @tparam MapFunctor Functor type.
+    * @tparam R Return type.
     * @return The newly created distributed array.
     */
     DM<T> map(const std::function<T(T)> &f);
 
+    //TODO: Change Description
     /**
     * \brief Returns a new distributed array with a_new[i] = f(i, a[i]). Note
-    *        that besides the element itself also its index is passed to the function.
+    *        that besides the element itself also its index is passed to the functor.
     *
-    * @param f Python Function.
+    * @param f The mapIndex functor, must be of type \em AMapIndexFunctor.
+    * @tparam MapIndexFunctor Functor type.
+    * @tparam R Return type.
     * @return The newly created distributed array.
     */
     DM<T> mapIndex(const std::function<T(int,T)> &f);
 
-    /**
-    * \brief Returns a new distributed array with a_new[i] = f(row, column, a[i]). Note
-    *        that besides the element itself also its row and column is passed to the function.
-    *
-    * @param f Python Function.
-    * @return The newly created distributed array.
-    */
+    //TODO: Add Description
     DM<T> mapIndex(const std::function<T(int,int,T)> &f);
-
-
-    // SKELETONS / COMMUNICATION / GATHER
-
-    /**
-     * \brief Transforms a distributed array to an ordinary array by copying each
-     *        element to the given array \em b. \em b must at least be of length
-     *        \em size.
-     *
-     * @param b The array to store the elements of the distributed array.
-     */
-    py::array_t<T> gather();
 
 
     //
     // GETTERS AND SETTERS
     //
 
-    /**
-    * \brief Returns the amount of rows in the DM.
-    *
-    * @return Amount of rows.
-    */
     int getRows();
 
-    /**
-    * \brief Returns the amount of columns in the DM.
-    *
-    * @return Amount of columns.
-    */
     int getCols();
 
     /**
@@ -169,16 +145,9 @@ public:
     /**
     * \briefs Sets the local partition.
     *
-    * @param array for the local partition.
+    * @param elements for the local partition.
     */
-    void setLocalPartition(py::array_t<T> array);
-
-    /**
-    * \briefs Sets the local partition.
-    *
-    * @param array for the local partition.
-    */
-    void setMatrix(py::array_t<T> array);
+//    void setLocalPartition(T* elements);
 
     /**
     * \brief Returns the element at the given global index \em index.
@@ -267,6 +236,8 @@ public:
     * \brief Each process prints its local partition of the distributed array.
     */
     void printLocal();
+
+//    void printmatrix();
 
 private:
     //

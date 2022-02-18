@@ -75,8 +75,8 @@ def test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output):
 
     image = convert(mandelbrot)
 
-    #if output:
-        #ppm(cols, rows, 255, image)
+    if output:
+        ppm(cols, rows, 255, image)
 
 
 # main
@@ -84,9 +84,12 @@ if __name__ == "__main__":
 
     initSkeletons(False)
 
-    rows, cols, n_runs, n_gpus = 1000, 1000, 2, 0
-    max_iters, zoom = 1000, 800
+    rows, cols, n_runs, n_gpus = 1000, 1000, 1, 1
+    max_iters, zoom = 1000, 400
     output, warmup = 1, 0
+
+    if isRootProcess():
+        print("rows;cols;maxIters;zoom;nRuns;nGPUS;averagetime;")
 
     if len(sys.argv) < 7:
         if isRootProcess():
@@ -114,13 +117,12 @@ if __name__ == "__main__":
     if warmup:
         test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, False)
 
-    # t = Timer()
-    runs = getNumRuns()
-    for run in range(runs):
+    start = timeit.default_timer()
+    for run in range(getNumRuns()):
         test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output)
-    # time = t.stop()
+    stop = timeit.default_timer()
     if isRootProcess():
         print(str(rows) + ";" + str(cols) + ";" + str(max_iters) + ";" + str(zoom) + ";" + str(n_runs) + ";" + str(
-            n_gpus) + ";")
+            n_gpus) + ";" + str(stop - start) + ";")
 
     terminateSkeletons()
