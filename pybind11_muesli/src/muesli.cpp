@@ -204,8 +204,8 @@ void bind_muesli(py::module& m) {
   py::class_<msl::Muesli>(m, "Muesli")
       .def_readonly_static("num_runs",  &msl::Muesli::num_runs)
   ;
-//  py::class_<msl::Timer>(m, "Timer")
-//      .def(py::init())
-//      .def("stop", &msl::Timer::stop)
-//  ;
+  py::class_<msl::Timer>(m, "Timer")
+      .def(py::init())
+      .def("stop", &msl::Timer::stop)
+  ;
 }
