@@ -53,7 +53,7 @@ for row in 1000 2000 3000 4000 5000; do
             for nRuns in 10; do
                 for nGPUs in 1; do
 		    for np in 1; do
-     			mpirun -np $np python3 mandelbrot.de.py $row $row $maxIters $zoom $nRuns $nGPU 0 0
+     			mpirun -np $np python3 alt_mandelbrot.de.py $row $row $maxIters $zoom $nRuns $nGPU 0 0
 		    done
                 done
             done
