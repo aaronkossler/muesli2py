@@ -1,5 +1,8 @@
 # ALPHA muesli2py
-muesli2py is developed to supply the functionalities of muesli in python code. For a minimal prototype the following features are essential:
+muesli2py is developed to supply the functionalities of muesli in python code. 
+
+## Minimum Requirements
+For a minimal prototype the following features are essential:
 - [x] configure setup.py to support 
     - [x] mpi
     - [ ] cuda OPTIONAL!([probably a good example](https://github.com/rmcgibbo/npcuda-example/blob/master/cython/setup.py))
