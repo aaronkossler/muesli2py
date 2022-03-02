@@ -22,8 +22,11 @@ Features which are not essential for a first prototype
     - [ ] support of more than 2 dimensions  
 - [ ] other skeletons
 
+## Usage
+The prototype works similar to the original muesli library. To make use of the library, code has to be wrapped with the functions "initSkeletons" and "terminateSkeletons". Example code, which demonstrates all the funcitonality can be found in the testDA.py and testDM.py files.
+
 
 ## Supporting Documentation
 - [Parsing arguments between C and python](https://docs.python.org/3/c-api/arg.html)
 - [Object Structures](https://docs.python.org/3/c-api/structures.html)
-
+- [Pybind11 Documentation](https://pybind11.readthedocs.io/en/stable/index.html)
