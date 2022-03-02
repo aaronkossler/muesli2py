@@ -5,7 +5,7 @@ muesli2py is developed to supply the functionalities of muesli in python code.
 For a minimal prototype the following features are essential:
 - [x] configure setup.py to support 
     - [x] mpi
-    - [ ] cuda OPTIONAL!([probably a good example](https://github.com/rmcgibbo/npcuda-example/blob/master/cython/setup.py))
+    - [ ] cuda OPTIONAL! ([probably a good example](https://github.com/rmcgibbo/npcuda-example/blob/master/cython/setup.py))
     - [x] (openacc)
     - [x] openmp (Threading Conflict with GIL)
 - [x] support for DA/DM (distributed arrays - distributed matrices)
