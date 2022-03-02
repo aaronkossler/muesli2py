@@ -1,12 +1,7 @@
 #pragma once
 
 #include <mpi.h>
-
-#ifdef _OPENMP
-   #include <omp.h>
-#else
-   #define omp_get_thread_num() 0
-#endif
+#include <openacc.h>
 
 #include <pybind11/pybind11.h>
 #include <iostream>
@@ -20,11 +15,9 @@
 #include <math.h>
 
 #include "detail/exception.h"
-//#include "conversion.h"
 #include "timer.h"
 
 #define MSL_USERFUNC
-//#define MSL_GPUFUNC
 #define MSL_CPUFUNC
 
 namespace py = pybind11;
@@ -48,14 +41,8 @@ public:
   static int distribution_mode;         // for farm skeleton
   static int task_group_size;           // aggregated task group size (farm skeleton)
   static int num_conc_kernels;          // number of concurrent kernels (farm skeleton)
-//  static int num_threads;               // number of CPU threads
   static int num_runs;                  // number of runs, for benchmarking
   static int num_gpus;                // number of GPUs
-//  static double cpu_fraction;           // fraction of each DA partition handled by CPU cores (rather than GPUs)
-//  static int max_gpus;                // maximum number of GPUs of each process
-//  static int threads_per_block;         // for one dimensional GPU thread blocks (DArray)
-//  static int tpb_x; // for two dimensional GPU thread blocks (DMatrix)
-//  static int tpb_y; // for two dimensional GPU thread blocks (DMatrix)
   static bool debug_communication;      // farm skeleton
   static bool use_timer;                // use a timer?
   static bool farm_statistics;          // collect statistics of how many task were processed by CPU/GPU
@@ -78,7 +65,6 @@ static const int DEFAULT_TILE_WIDTH = 16;
 /**
  * \brief Initializes Muesli. Needs to be called before any skeleton is used.
  */
-//void initSkeletons(int argc, char** argv, bool debug_communication = 0);
 void initSkeletons(bool debug_communication = 0);
 
 /**
@@ -87,26 +73,14 @@ void initSkeletons(bool debug_communication = 0);
 void terminateSkeletons();
 
 /**
- * \brief Wrapper for printf. Only process with id 0 prints the given format string.
- */
-//void printv(const char* format, ...);
-
-/**
- * \brief Sets the number of CPU threads.
- *
- * @param num_threads The number of CPU threads.
- */
-//void setNumThreads(int num_threads);
-
-/**
  * \brief Gets the number of runs for a benchmark application.
  */
-    int getNumRuns();
+int getNumRuns();
 
 /**
  * \brief Gets the number of GPUs for a benchmark application.
  */
-    int getNumGpus();
+int getNumGpus();
 
 /**
  * \brief Sets the number of runs for a benchmark application.
@@ -231,7 +205,7 @@ template <typename T>
 inline void MSL_Recv(int source, T* recv_buffer, MPI_Status& stat, size_t size, int tag = MYTAG);
 
 /**
- * \brief Receives (non-blockig) a buffer of type \em T from process \em source.
+ * \brief Receives (non-blocking) a buffer of type \em T from process \em source.
  *
  * @param source The source process id.
  * @param recv_buffer The receive buffer.
@@ -243,8 +217,15 @@ inline void MSL_Recv(int source, T* recv_buffer, MPI_Status& stat, size_t size, 
 template <typename T>
 inline void MSL_IRecv(int source, T* recv_buffer, MPI_Request& req, size_t size, int tag = MYTAG);
 
-// Send/receive function for sending a buffer of type T to process \em destination and
-// receiving a buffer of type T from the same process (destination).
+/**
+ * \brief Send/receive function for sending a buffer of type T to process \em destination and
+ *          receiving a buffer of type T from the same process (destination).
+ *
+ * @param destination The destination process id.
+ * @param send_buffer The send buffer.
+ * @param recv_buffer The receive buffer.
+ * @param size Size (number of elements) of the message.
+ */
 template<typename T>
 inline void MSL_SendReceive(int destination, T* send_buffer, T* recv_buffer, size_t size = 1);
 
@@ -368,17 +349,8 @@ inline C1 proj1_2(C1 a, C2 b);
 template <typename C1, typename C2>
 inline C2 proj2_2(C1 a, C2 b);
 
-//template <typename F>
-// inline int auxRotateRows(const Fct1<int, int, F>& f, int blocks, int row, int col);
-
-//template <typename F>
-// inline int auxRotateCols(const Fct1<int, int, F>& f, int blocks, int row, int col);
-
 template <typename T>
 inline void show(T* a, int size);
-
-int doSomething();
-
 
 }
 

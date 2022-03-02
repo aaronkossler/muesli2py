@@ -202,12 +202,9 @@ void msl::DM<T>::set(int globalIndex, const T& v) {
 
 // method (only) useful for debugging
 template<typename T>
-//void msl::DM<T>::showLocal(const std::string& descr) {
 void msl::DM<T>::showLocal() {
   if (msl::isRootProcess()) {
     std::ostringstream s;
-//    if (descr.size() > 0)
-//    s << descr << ": ";
     s << "[";
     for (int i = 0; i < nLocal; i++) {
       s << localPartition[i] << " ";
@@ -217,14 +214,10 @@ void msl::DM<T>::showLocal() {
   }
 }
 
-// TODO: fix this maybe
 template<typename T>
-//void msl::DM<T>::show(const std::string& descr) {
 void msl::DM<T>::show() {
   T* b = new T[n];
   std::ostringstream s;
-//  if (descr.size() > 0)
-//    s << descr << ": " << std::endl;
 
   msl::allgather(localPartition, b, nLocal);
 

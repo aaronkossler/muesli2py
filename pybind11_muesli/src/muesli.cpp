@@ -1,12 +1,5 @@
 #include <pybind11/pybind11.h>
-//#include <stdlib.h>
-//#include <stdio.h>
-//#include <error.h>
-//#include <omp.h>
-//#include <mpi.h>
-//#include <iostream>
 #include "../include/muesli.h"
-#include <openacc.h>
 
 int msl::Muesli::proc_id;
 int msl::Muesli::proc_entrance;
@@ -17,22 +10,14 @@ double msl::Muesli::start_time;
 char* msl::Muesli::program_name;
 int msl::Muesli::distribution_mode;
 int msl::Muesli::task_group_size;
-//int msl::Muesli::num_conc_kernels;
-//int msl::Muesli::num_threads;
 int msl::Muesli::num_runs;
 int msl::Muesli::num_gpus;
-//int msl::Muesli::max_gpus;
-//double msl::Muesli::cpu_fraction = 0.2; // fraction of each DA partition handled by CPU cores (rather than GPUs)
-//int msl::Muesli::threads_per_block;
-//int msl::Muesli::tpb_x;
-//int msl::Muesli::tpb_y;
 bool msl::Muesli::debug_communication;
 bool msl::Muesli::use_timer;
 bool msl::Muesli::farm_statistics = false;
 msl::Timer* timer;
 
 
-//void msl::initSkeletons(int argc, char** argv, bool debug_communication)
 void msl::initSkeletons(bool debug_communication)
 {
   MPI_Init(NULL, NULL);
