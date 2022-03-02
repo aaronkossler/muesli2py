@@ -114,13 +114,13 @@ if __name__ == "__main__":
     if warmup:
         test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, False)
 
-    # t = Timer()
+    start = timeit.default_timer()
     runs = getNumRuns()
     for run in range(runs):
         test_mandelbrot(rows, cols, max_iters, center_x, center_y, zoom, output)
-    # time = t.stop()
+    stop = timeit.default_timer()
     if isRootProcess():
         print(str(rows) + ";" + str(cols) + ";" + str(max_iters) + ";" + str(zoom) + ";" + str(n_runs) + ";" + str(
-            n_gpus) + ";")
+            n_gpus) + ";" + str((stop - start)/n_runs) + ";")
 
     terminateSkeletons()

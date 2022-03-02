@@ -13,12 +13,11 @@ namespace py = pybind11;
 namespace msl {
 
 /**
- * \brief Class DA represents a distributed array.
+ * \brief Class DM represents a distributed matrix.
  *
- * A distributed array represents a one-dimensional parallel container and is
+ * A distributed matrix represents a one-dimensional parallel container and is
  * distributed among all MPI processes the application was started with. It
- * includes data parallel skeletons such as map, mapStencil, zip, and fold as
- * well as variants of these skeletons.
+ * includes the data parallel skeleton map as well as variants of it.
  *
  * \tparam T Element type. Restricted to classes without pointer data members.
  */
@@ -39,16 +38,17 @@ public:
     /**
     * \brief Creates an empty distributed matrix.
     *
-    * @param size Size of the distributed array.
-    * @param d Distribution of the distributed array.
+    * @param col amount of columns of the distributed matrix.
+    * @param row amount of rows of the distributed matrix.
     */
     DM(int col, int row);
 
     /**
-    * \brief Creates a distributed matrix with \em size elements equal to
-    *        \em initial_value.
+    * \brief Creates a distributed matrix and fills it with
+    *           \em initial_value.
     *
-    * @param size Size of the distributed array.
+    * @param col amount of columns of the distributed matrix.
+    * @param row amount of rows of the distributed matrix.
     * @param initial_value Initial value for all elements.
     */
     DM(int col, int row, const T& initial_value);
@@ -59,7 +59,7 @@ public:
     ~DM();
 
     /**
-    * \brief Initializes the elements of the distributed array with the value \em
+    * \brief Initializes the elements of the distributed matrix with the value \em
     *        value.
     *
     * @param value The value.
@@ -73,16 +73,15 @@ public:
 
     // SKELETONS / COMPUTATION / MAP
 
-    //TODO: Change Description
     /**
-    * \brief Replaces each element a[i] of the distributed array with f(a[i]).
+    * \brief Replaces each element a[i] of the distributed matrix with f(a[i]).
     *
     * @param f Python function.
     */
     void mapInPlace(const std::function<T(T)> &f);
 
     /**
-    * \brief Replaces each element a[i] of the distributed array with f(i, a[i]).
+    * \brief Replaces each element a[i] of the distributed matrix with f(i, a[i]).
     *        Note that besides the element itself also its index is passed to the
     *        function.
     *
@@ -91,7 +90,7 @@ public:
     void mapIndexInPlace(const std::function<T(int,T)> &f);
 
     /**
-    * \brief Replaces each element a[i] of the distributed array with f(row, column, a[i]).
+    * \brief Replaces each element a[i] of the distributed matrix with f(row, column, a[i]).
     *        Note that besides the element itself also its row and column is passed to the
     *        function.
     *
@@ -103,28 +102,28 @@ public:
     void mapIndexInPlaceM(const std::function<T(int,int,T)> &f);
 
     /**
-    * \brief Returns a new distributed array with a_new[i] = f(a[i]).
+    * \brief Returns a new distributed matrix with a_new[i] = f(a[i]).
     *
     * @param f Python function.
-    * @return The newly created distributed array.
+    * @return The newly created distributed matrix.
     */
     DM<T> map(const std::function<T(T)> &f);
 
     /**
-    * \brief Returns a new distributed array with a_new[i] = f(i, a[i]). Note
+    * \brief Returns a new distributed matrix with a_new[i] = f(i, a[i]). Note
     *        that besides the element itself also its index is passed to the function.
     *
     * @param f Python Function.
-    * @return The newly created distributed array.
+    * @return The newly created distributed matrix.
     */
     DM<T> mapIndex(const std::function<T(int,T)> &f);
 
     /**
-    * \brief Returns a new distributed array with a_new[i] = f(row, column, a[i]). Note
+    * \brief Returns a new distributed matrix with a_new[i] = f(row, column, a[i]). Note
     *        that besides the element itself also its row and column is passed to the function.
     *
     * @param f Python Function.
-    * @return The newly created distributed array.
+    * @return The newly created distributed matrix.
     */
     DM<T> mapIndex(const std::function<T(int,int,T)> &f);
 
@@ -132,11 +131,9 @@ public:
     // SKELETONS / COMMUNICATION / GATHER
 
     /**
-     * \brief Transforms a distributed array to an ordinary array by copying each
-     *        element to the given array \em b. \em b must at least be of length
-     *        \em size.
+     * \brief Transforms a distributed matrix to a numpy array.
      *
-     * @param b The array to store the elements of the distributed array.
+     * @return Numpy Array.
      */
     py::array_t<T> gather();
 
@@ -198,14 +195,14 @@ public:
     void set(int globalIndex, const T& v);
 
     /**
-    * \brief Returns the global size of the distributed array.
+    * \brief Returns the global size of the distributed matrix.
     *
     * @return The global size.
     */
     int getSize() const;
 
     /**
-    * \brief Returns the size of local partitions of the distributed array.
+    * \brief Returns the size of local partitions of the distributed matrix.
     *
     * @return The size of local partitions.
     */
@@ -246,25 +243,19 @@ public:
     void setLocal(int localIndex, const T& v);
 
     /**
-    * \brief Prints the local partion of the root processor of the distributed array to standard output. Optionally, the user
-    *        may pass a description that will be printed with the output. Just useful for debugging.
+    * \brief Prints the local partition of the root processor of the distributed matrix to standard output.
     *
-    * @param descr The description string.
     */
-//    void showLocal(const std::string& descr);
     void showLocal();
 
     /**
-    * \brief Prints the distributed array to standard output. Optionally, the user
-    *        may pass a description that will be printed with the output.
+    * \brief Prints the distributed matrix to standard output.
     *
-    * @param descr The description string.
     */
-//    void show(const std::string& descr = std::string());
     void show();
 
     /**
-    * \brief Each process prints its local partition of the distributed array.
+    * \brief Each process prints its local partition of the distributed matrix.
     */
     void printLocal();
 

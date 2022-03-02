@@ -35,35 +35,18 @@ msl::Timer* timer;
 //void msl::initSkeletons(int argc, char** argv, bool debug_communication)
 void msl::initSkeletons(bool debug_communication)
 {
-//  MPI_Init(&argc, &argv);
   MPI_Init(NULL, NULL);
   MPI_Comm_size(MPI_COMM_WORLD, &Muesli::num_total_procs);
   MPI_Comm_rank(MPI_COMM_WORLD, &Muesli::proc_id);
-/*  #ifdef _OPENMP
-    omp_set_nested(1);
-  #endif*/
-
-/*  if (1 <= argc) {
-    Muesli::program_name = argv[0];
-  }*/
 
   int device_count = 0;
 
   Muesli::task_group_size = DEFAULT_TASK_GROUP_SIZE;
-//  Muesli::num_conc_kernels = DEFAULT_NUM_CONC_KERNELS;
-
-/*  #ifdef _OPENMP
-    Muesli::num_threads = omp_get_max_threads();
-  #else
-    Muesli::num_threads = 1;
-  #endif*/
 
   Muesli::debug_communication = debug_communication;
   Muesli::num_runs = DEFAULT_NUM_RUNS;
   Muesli::num_local_procs = Muesli::num_total_procs;
   Muesli::proc_entrance = 0;
-//  setThreadsPerBlock(512); // default for one dimensional thread blocks
-//  setThreadsPerBlock(16, 16); // default for two dimensional thread blocks
   Muesli::start_time = MPI_Wtime();
 }
 
@@ -102,27 +85,6 @@ void msl::terminateSkeletons()
   MPI_Finalize();
   Muesli::running_proc_no = 0;
 }
-
-/*void msl::printv(const char* format, ...) {
-  va_list argp;
-  va_start(argp, format);
-
-  if(isRootProcess()) {
-    vprintf(format, argp);
-  }
-
-  va_end(argp);
-}*/
-
-/*void msl::setNumThreads(int threads)
-{
-  #ifdef _OPENMP
-    Muesli::num_threads = threads;
-    omp_set_num_threads(threads);
-  #else
-    Muesli::num_threads = 1;
-  #endif
-}*/
 
 int msl::getNumRuns()
 {
@@ -192,8 +154,6 @@ void msl::throws(const detail::Exception& e)
 void bind_muesli(py::module& m) {
   m.def("initSkeletons", &msl::initSkeletons);
   m.def("terminateSkeletons", &msl::terminateSkeletons);
-//  m.def("printv", &msl::printv);
-//  m.def("setNumThreads", &msl::setNumThreads);
   m.def("setNumRuns", &msl::setNumRuns);
   m.def("getNumRuns", &msl::getNumRuns);
   m.def("getNumGpus", &msl::getNumGpus);
@@ -204,8 +164,4 @@ void bind_muesli(py::module& m) {
   py::class_<msl::Muesli>(m, "Muesli")
       .def_readonly_static("num_runs",  &msl::Muesli::num_runs)
   ;
-//  py::class_<msl::Timer>(m, "Timer")
-//      .def(py::init())
-//      .def("stop", &msl::Timer::stop)
-//  ;
 }

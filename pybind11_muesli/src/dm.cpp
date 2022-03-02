@@ -311,7 +311,7 @@ void msl::DM<T>::mapIndexInPlaceM(const std::function<T(int,int,T)> &f) {
 
 template<typename T>
 msl::DM<T> msl::DM<T>::map(const std::function<T(T)> &f) {
-    DM<T> result(ncol, nrow);
+    DM<T> result(nrow, ncol);
 
     #pragma acc parallel loop
     for (int k = 0; k < nCPU; k++){
@@ -323,7 +323,7 @@ msl::DM<T> msl::DM<T>::map(const std::function<T(T)> &f) {
 
 template<typename T>
 msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(int,T)> &f) {
-    DM<T> result(ncol, nrow);
+    DM<T> result(nrow, ncol);
 
     #pragma acc parallel loop
     for (int k = 0; k < nCPU; k++){
@@ -336,7 +336,7 @@ msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(int,T)> &f) {
 
 template<typename T>
 msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(int,int,T)> &f) {
-    DM<T> result(ncol, nrow);
+    DM<T> result(nrow, ncol);
 
     #pragma acc parallel loop
     for (int k = 0; k < nCPU; k++){
@@ -348,8 +348,6 @@ msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(int,int,T)> &f) {
     return result;
 }
 
-
-// TODO: Fix overload_cast
 
 void bind_dm(py::module& m) {
     py::class_<msl::DM<int>>(m, "intDM")
@@ -391,6 +389,7 @@ void bind_dm(py::module& m) {
         .def("getSize", &msl::DM<int>::getSize)
         .def("getLocalSize", &msl::DM<int>::getLocalSize)
         .def("getFirstIndex", &msl::DM<int>::getFirstIndex)
+        .def("isLocal", &msl::DM<int>::isLocal)
         .def("getLocal", &msl::DM<int>::getLocal)
         .def("setLocal", &msl::DM<int>::setLocal)
         .def("gather", &msl::DM<int>::gather)
@@ -400,8 +399,6 @@ void bind_dm(py::module& m) {
         .def("getRows", &msl::DM<Pixel>::getRows)
         .def("getCols", &msl::DM<Pixel>::getCols)
         .def("get", &msl::DM<Pixel>::get)
-        .def("mapIndexInPlace", py::overload_cast<const std::function<Pixel(int,Pixel)> &>(&msl::DM<Pixel>::mapIndexInPlace))
-        .def("mapIndexInPlace", py::overload_cast<const std::function<Pixel(int,int,Pixel)> &>(&msl::DM<Pixel>::mapIndexInPlace))
         .def("mapIndexInPlaceM", &msl::DM<Pixel>::mapIndexInPlaceM)
     ;
     py::class_<msl::DM<float>>(m, "floatDM")
