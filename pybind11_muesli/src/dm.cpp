@@ -279,7 +279,7 @@ void msl::DM<T>::mapIndexInPlace(const std::function<T(int,T)> &f) {
 }
 
 template<typename T>
-void msl::DM<T>::mapIndexInPlace(const std::function<T(int,int,T)> &f) {
+void msl::DM<T>::mapIndexInPlace2(const std::function<T(int,int,T)> &f) {
 
   // all necessary calculations are performed otherwise some are skipped.
   #pragma acc parallel loop
@@ -328,7 +328,7 @@ msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(int,T)> &f) {
 }
 
 template<typename T>
-msl::DM<T> msl::DM<T>::mapIndex(const std::function<T(int,int,T)> &f) {
+msl::DM<T> msl::DM<T>::mapIndex2(const std::function<T(int,int,T)> &f) {
     DM<T> result(nrow, ncol);
 
     #pragma acc parallel loop
@@ -349,12 +349,16 @@ void bind_dm(py::module& m) {
         .def(py::init<int, int, int>())
         .def("fill", &msl::DM<int>::fill)
         .def("mapInPlace", &msl::DM<int>::mapInPlace)
-        .def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &>(&msl::DM<int>::mapIndexInPlace))
-        .def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int,int)> &>(&msl::DM<int>::mapIndexInPlace))
+        .def("mapIndexInPlace", &msl::DM<int>::mapIndexInPlace)
+        .def("mapIndexInPlace2", &msl::DM<int>::mapIndexInPlace2)
+//        .def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int)> &>(&msl::DM<int>::mapIndexInPlace))
+//        .def("mapIndexInPlace", py::overload_cast<const std::function<int(int,int,int)> &>(&msl::DM<int>::mapIndexInPlace))
         .def("mapIndexInPlaceM", &msl::DM<int>::mapIndexInPlaceM)
         .def("map", &msl::DM<int>::map)
-        .def("mapIndex", py::overload_cast<const std::function<int(int,int)> &>(&msl::DM<int>::mapIndex))
-        .def("mapIndex", py::overload_cast<const std::function<int(int,int,int)> &>(&msl::DM<int>::mapIndex))
+        .def("mapIndex", &msl::DM<int>::mapIndex)
+        .def("mapIndex2", &msl::DM<int>::mapIndex2)
+//        .def("mapIndex", py::overload_cast<const std::function<int(int,int)> &>(&msl::DM<int>::mapIndex))
+//        .def("mapIndex", py::overload_cast<const std::function<int(int,int,int)> &>(&msl::DM<int>::mapIndex))
 //        .def("mapIndex",[](py::function &f) {
 //              py::print(py::detail::get_function(f));
 //              pybind11::module inspect_module = pybind11::module::import("inspect");
@@ -399,8 +403,10 @@ void bind_dm(py::module& m) {
         .def("getRows", &msl::DM<float>::getRows)
         .def("getCols", &msl::DM<float>::getCols)
         .def("get", &msl::DM<float>::get)
-        .def("mapIndexInPlace", py::overload_cast<const std::function<float(int,float)> &>(&msl::DM<float>::mapIndexInPlace))
-        .def("mapIndexInPlace", py::overload_cast<const std::function<float(int,int,float)> &>(&msl::DM<float>::mapIndexInPlace))
+        .def("mapIndexInPlace", &msl::DM<float>::mapIndexInPlace)
+        .def("mapIndexInPlace2", &msl::DM<float>::mapIndexInPlace2)
+//        .def("mapIndexInPlace", py::overload_cast<const std::function<float(int,float)> &>(&msl::DM<float>::mapIndexInPlace))
+//        .def("mapIndexInPlace", py::overload_cast<const std::function<float(int,int,float)> &>(&msl::DM<float>::mapIndexInPlace))
         .def("mapIndexInPlaceM", &msl::DM<float>::mapIndexInPlaceM)
     ;
     py::class_<Pixel>(m, "Pixel")

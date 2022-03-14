@@ -96,7 +96,7 @@ public:
     *
     * @param f Python function.
     */
-    void mapIndexInPlace(const std::function<T(int,int,T)> &f);
+    void mapIndexInPlace2(const std::function<T(int,int,T)> &f);
 
     //TODO: Add Description
     void mapIndexInPlaceM(const std::function<T(int,int,T)> &f);
@@ -125,7 +125,7 @@ public:
     * @param f Python Function.
     * @return The newly created distributed matrix.
     */
-    DM<T> mapIndex(const std::function<T(int,int,T)> &f);
+    DM<T> mapIndex2(const std::function<T(int,int,T)> &f);
 
 
     // SKELETONS / COMMUNICATION / GATHER
